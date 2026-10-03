@@ -1,0 +1,3 @@
+# Windows betikleri CRLF ister, Unix betikleri LF — yoksa kurulum bozulur.
+*.bat text eol=crlf
+*.sh  text eol=lf

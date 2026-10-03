@@ -1,0 +1,26 @@
+# Karakter haritasi (model sheet) sablonu.
+# ONEMLI: Mevcut 4 harita birebir ayni gridde DEGIL. Ortak bir tasarim dili
+# var, sabit yerlesim yok. Asagidaki "zorunlu_bilesenler" her haritada bulunur;
+# "yerlesim" serbesttir ve karakterin yasina/roluna gore degisir.
+
+oran: "4:5"
+zemin: krem-bej duz zemin (#F5EFE6 civari), ince tek cizgi ic cerceve
+stil_notu: 3D Pixar render, yumusak sicak isik, hafif dokulu zemin
+
+zorunlu_bilesenler:
+  - tam_boy_durus          # notr-sicak ifade, ayakkabi/terlik dahil
+  - ifade_sheet            # 4-5 kafa ifadesi; etiketli olabilir (maya/lila) veya etiketsiz (daniel)
+  - aktivite_pozlari       # 1-3 adet, karakteri rolunde gosteren sahne; etiketlenebilir
+  - renk_paleti            # 5-7 kare serit; "COLOR PALETTE" basligi opsiyonel
+  - isim_bloku             # serif buyuk harf isim + kalp/yildiz ayirici + yas
+
+opsiyonel_bilesenler:
+  - kisilik_metni          # lila'da var: 4-6 satir karakter tanimi
+  - aksesuar_kutusu        # lila'da var: favori nesne + kisa aciklama
+  - coklu_acili_durus      # maya'da var: on / uc-ceyrek / yan profil
+
+yerlesim_ornekleri:
+  daniel: isim sag altta, palet sol altta, 5 etiketsiz ifade
+  maya:   isim sol altta kutuda, 3 acili durus, 4 etiketli ifade, 2 etiketli aktivite
+  leo:    isim sol ustte kutuda, tam boy + 3 poz, 4 ifade, 7 kare palet
+  lila:   isim sol ustte + kisilik metni, 4 etiketli ifade, 2 aktivite, aksesuar kutusu

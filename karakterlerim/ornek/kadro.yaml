@@ -1,0 +1,39 @@
+# Örnek kadro — ilk karakterlerin buraya eklenir.
+#
+# En kolay yol arayüz: Karakterlerim → + Yeni karakter
+#   - "Canavar çizsin": karakterini anlat, bağlı platformun model sheet'ini çizer.
+#   - "Görsel yükle": elindeki model sheet görselini yükle, alanları doldur.
+#
+# ÖNEMLİ AYRIM:
+#   kimlik_kilidi      -> ASLA değişmez (yaş, saç, göz, yüz, vücut).
+#                         Karakter tutarlılığının tek dayanağı budur.
+#   varsayilan_kiyafet -> günlük kıyafet; sahne gerektirirse işe özel değişir
+#                         (isler/<kod>/kiyafet.yaml).
+# Metinler prompt'a BİREBİR gider, İngilizce yazılır (yalnızca `rol` Türkçe olabilir).
+# Model sheet görseli bu klasöre konur, adı `referans_dosya`'ya yazılır.
+#
+# Elle eklemek istersen örnek bir karakter bloğu:
+#
+#   defne:
+#     ad: Defne
+#     rol: anne
+#     rol_en: the mother
+#     yas_araligi: "31"
+#     referans_dosya: defne.png
+#     kimlik_kilidi: >-
+#       Defne, the mother, 31. Straight shoulder-length chestnut hair, warm
+#       hazel eyes, soft round face, light freckles, slender build.
+#     varsayilan_kiyafet: >-
+#       Sage-green knit cardigan over a cream t-shirt, light denim jeans,
+#       white sneakers.
+#     mizac: Warm, playful, quick to laugh.
+#     ifadeler: [warm smile, surprised, worried, laughing]
+#     palet: ["#8A9A5B", "#F0E6D2", "#7B4F3A", "#A7B8C8", "#E8D5BE"]
+
+kadro_adi: ornek
+aciklama: İlk kadrom — karakterlerini buraya ekle
+ortam:
+  mekan: warm cinematic family home interior
+  isik: soft warm natural light, cozy
+  palet_hissi: warm earthy neutrals, cream and wood tones
+karakterler: {}

@@ -1,0 +1,148 @@
+# Pipeline ayarlari
+
+kesif:
+  haftalik_hedef: 10
+  actor: "apify~instagram-hashtag-scraper"
+  # ONEMLI: keyword aramasi hashtag'den cok daha isabetli sonuc veriyor.
+  # Hashtag denemesi (#3danimation, #pixarstyle) alakasiz ve dusuk izlenmeli
+  # (8K-57K) sonuc verdi; asagidaki keyword'ler 1M-99M izlenmeli, 7-15sn'lik
+  # 3D aile/bebek animasyonlari getirdi. keyword_arama'yi kapatma.
+  keyword_arama: true
+  aramalar:
+    - "3d animated family story"
+    - "pixar style family animation"
+    - "3d baby animation funny"
+    - "emotional 3d family animation"
+  sonuc_limiti: 20          # arama basina
+  min_izlenme: 500000
+  min_begeni: 5000
+  # Ust sinir Seedance'in uretebildigi maksimum sureye bagli.
+  # Seedance 2.5 tek geciste 30sn uretiyor (2.0'da 15sn'ydi), bu yuzden tavan
+  # 20 -> 30 cikti. 15sn ustu isler BOLUNMEZ; storyboard SAYFA sayisi artar.
+  # bkz. docs/seedance_2_5.md
+  sure_araligi_sn: [5, 30]
+
+storyboard:
+  # 16:9 tuval, 12 esit panel. 6 sutun x 2 satir secildi cunku her hucre
+  # ~9:16 dikey oluyor -> uretilecek dikey videoyla kadraj uyumu saglaniyor.
+  tuval_orani: "16:9"
+  # DIKKAT ad cakismasi: buradaki panel_sayisi SAYFA BASINA panel (12).
+  # isler/<kod>/storyboard.json -> tuval.panel_sayisi ise TOPLAM panel (cok
+  # sayfali iste 24). Ikisini karistirmak yarim anlati uretir.
+  panel_sayisi: 12
+  sutun: 6
+  satir: 2
+  # 4K kullanma: belirgin daha pahali, okunurluga katkisi yok. 2K yeterli.
+  # 1K daha ucuz ama 12 panel tek tuvale sigdigi icin panel basina cozunurluk
+  # dusuk kalir - kimlik okunmuyorsa 2K ile yeniden uret.
+  cozunurluk: "2K"
+  kalite: medium
+  # 15sn ustu isler icin panel YOGUNLUGU artmaz, SAYFA sayisi artar.
+  # Gerekce: 24 paneli tek 16:9 tuvale sigdirmak panel basina cozunurlugu
+  # yariya duserir, kimlik okunmaz hale gelir (1K'da zaten sinirda).
+  # 6x2 gridin hucre orani 0.59 (~9:16) ve dikey video kadraj uyumu bundan
+  # geliyor - sutun/satir degistirmek bu uyumu bozar.
+  # Sayfa basina panel = sutun * satir (kod bunu turetir, ayri anahtar tutulmuyor).
+  # Panel numaralari GLOBAL (1..24), sayfa basina SIFIRLANMAZ - yoksa
+  # beat <-> panel eslesmesi belirsizlesir. Bu davranis kodda sabit, ayar degil.
+  # HER DILIM KENDI MODELINI TASIR. Seedance 2.0 emekli DEGIL - 15sn'lik
+  # uretimlerin yolu odur ve oyle kaliyor. 2.5 onun yerine gecmez, yanina
+  # eklenir: 2.0'in cikaramadigi uzun isleri karsilar.
+  sure_dilimleri:
+    - ust_sure_sn: 15
+      model: "Seedance 2.0"
+      sayfa: 1
+      panel: 12
+    - ust_sure_sn: 30
+      model: "Seedance 2.5"
+      sayfa: 2
+      panel: 24
+  # DAMGA KAPALI - acma. Storyboard sayfasi Seedance'a REFERANS olarak gidiyor
+  # ve panele basilan numara video karelerine kopyalaniyor: bir 30sn'lik video
+  # bastan sona sol ust kose rakamiyla cikti. Tam olcum ve gerekce:
+  # docs/damga_tuzagi.md
+  damga: false
+  # Panel <-> beat eslesmesi denetimi icin numara hala gerekiyor; artik modelden
+  # istenmiyor, uretimden SONRA yerel olarak Pillow ile ayri bir kopyaya
+  # basiliyor: storyboard_sayfaN_denetim.png. Bu kopya ASLA yuklenmez.
+  damga_yerel_denetim: true
+  # ONAY KAPISI - ZORUNLU. Storyboard uretildikten sonra is DURUR; gorsel
+  # kullaniciya sunulur ve acik onay alinmadan video asamasina GECILMEZ.
+  # Gerekcesi: video storyboard'un yapisini birebir devraliyor, bu yuzden
+  # storyboard'daki her anlati hatasi videoya aynen tasiniyor ve video
+  # duzeltmesi storyboard duzeltmesinden ~15 kat pahali (525 vs 35 kredi).
+  onay_gerekli: true
+  onay_sunumu: arayuzde numarali denetim kopyasi + panel listesi gosterilir
+
+video:
+  cikti_orani: "9:16"
+  # MODEL BURADA SABIT DEGIL. Hangi modelin kullanilacagini storyboard.sure_dilimleri
+  # belirler (<=15sn -> Seedance 2.0, 16-30sn -> Seedance 2.5) ve plan_yap()
+  # plan.model olarak dondurur. Buraya tek model yazma - iki model de canli.
+  varsayilan_model: "Seedance 2.0"
+  # Varsayilan sure. Kaynak daha uzunsa kaynagin suresine yuvarlanir (tam sayi).
+  toplam_sure_sn: 15
+  # 15sn ustu is bu esigi gecer -> 2.5 + cok sayfali storyboard yoluna girer.
+  uzun_esik_sn: 15
+  ses: true            # her iki Seedance surumu de native audio uretir
+  # Panel basina sure sabit degil: toplam_sure / panel_sayisi.
+  # 15s/12 = 1.25s, 30s/24 = 1.25s -> iki dilimde de ayni ritim bandi.
+  panel_basina_sn_tavan: 1.25
+
+kredi:
+  # Bu uygulamada ucretsiz uretim yolu YOK: storyboard, video ve karakter model
+  # sheet'i her zaman kullanicinin bagladigi MCP uzerinden, kendi kredisiyle uretilir.
+  # Maliyeti daima platformun bakiye araciyla once/sonra farkindan olc - gorev
+  # kayitlarindaki creditsCost gibi alanlar guvenilmez (0 gosterip kredi dusurebiliyor).
+  apify_min_kalan_usd: 0.30
+  # Olculen gercek maliyet: 24 oge = $0.026  (~$0.0011/oge)
+  apify_oge_basina_usd: 0.0011
+
+yollar:
+  isler: isler
+  kadrolar: karakterlerim
+
+# ---------------------------------------------------------------------------
+# Seedance 2.5 SERT SINIRLARI. Ihlal edilirse uretim reddedilir veya bozulur.
+# Tam aciklama + gerekceler: docs/seedance_2_5.md
+seedance_2_5:
+  sure_araligi_sn: [4, 30]      # TAM SAYI olmak zorunda, ondalik yok
+  sure_tam_sayi: true
+  oranlar: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"]
+  cozunurlukler: ["480p", "720p"]   # 1080p YOK
+  fps: 24
+  cikti_formatlari: ["mp4", "mov"]
+  eszamanli_is: 3               # bireysel hesap (kurumsal 10)
+  rpm: 180
+  referans:
+    toplam_en_fazla: 50
+    # TAVAN ile IDEAL ayri sey: 50 varlik yuklemek kararliligi ARTIRMAZ.
+    ideal_varlik_sayisi: [6, 10]
+    en_fazla_ozne: 5            # ozne = kilitlenecek kisi/urun/mekan/kilit obje
+    gorsel:
+      en_fazla: 30
+      boyut_mb: 30
+    video:
+      en_fazla: 10
+      boyut_mb: 200
+      klip_sn: [2, 30]
+      toplam_sn: 30
+      ideal_klip_sn: [5, 10]
+    ses:
+      en_fazla: 10
+      boyut_mb: 15
+      klip_sn: [2, 30]
+      toplam_sn: 30
+      ideal_klip_sn: [5, 10]
+  # TUZAK: bu senaryolarda YALNIZCA Akilli Oran calisir, cikti GIRDININ oranini
+  # devralir. 9:16 cikti isteniyorsa girdi klibi zaten 9:16 olmak zorunda -
+  # 16:9 bir kaynagi uzatip 9:16 beklemek sessizce yanlis oran uretir.
+  akilli_oran_zorunlu: ["ilk_kare", "ilk_son_kare", "video_uzatma", "video_duzenleme"]
+  # Video duzenlemede ayrica cikti GIRDININ suresini devralir.
+  akilli_sure_zorunlu: ["video_duzenleme"]
+  fiyat_usd_m_token:
+    video_girdisi_yok: 10.7
+    video_girdisi_var: 6.4
+  # token = (girdi_video_sn + cikti_video_sn) * genislik * yukseklik * fps / 1024
+  # Girdi video suresi de faturalanir; cozunurluk maliyeti KARESEL buyutur.
+  token_formulu: "(girdi_sn + cikti_sn) * w * h * fps / 1024"

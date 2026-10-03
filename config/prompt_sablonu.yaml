@@ -1,0 +1,118 @@
+# Seedance 2.5 video prompt sablonu.  (sinirlar: docs/seedance_2_5.md)
+# Kullanicinin verdigi calisan ornek prompt'tan turetildi - yapi korunmustur.
+# {  } icindekiler prompt_uretici.py tarafindan doldurulur.
+
+# Her karakter icin tekrarlanan satir. Sadece sahnede GORUNEN karakterler eklenir.
+#
+# TUZAK: bu satir eskiden "Use @{topview_ref} as ..." diyordu, yani kalici bir
+# platform medya ID'sini prompt'a yaziyordu. Platform bu ID'leri PARSE ETMIYOR -
+# duz metin olarak kaliyorlar ve referans hic devreye girmiyor. Yalnizca YUKLENEN
+# gorseller referans olur (TopView kaydinda <<<ImageN>>> olarak gorunur). Bir is
+# bu yuzden karakter referansi olmadan kuyruga girdi ve iptal edilemedi.
+# Karakterler de storyboard sayfalari gibi DOSYA olarak yuklenir ve yukleme
+# sirasina gore @ImageN alir. Etiketi prompt_uretici.referans_plani() hesaplar.
+karakter_satiri: >-
+  Use @{etiket} as {ad}, {rol_en}: lock the face, hair and build of {ad} to this
+  character model sheet in every shot.
+
+# Karakter satirlarindan HEMEN SONRA gelir. Model sheet'ler karakterin GUNLUK
+# kiyafetini gosterir; sahne kiyafeti cogu zaman farklidir (pijama, gece kiyafeti,
+# sahne-ozel kostum). Bu satir olmazsa model sheet'teki kiyafet sahneye sizar.
+kimlik_kiyafet_ayrimi: >-
+  Take identity from these character model sheets only - faces, hair and
+  proportions - and NOT clothing. The outfits for this video are different from
+  the sheets and never change across the whole video: {kiyafetler}
+
+# Storyboard referans satiri - TEK sayfa (<=15sn isler)
+storyboard_satiri: >-
+  Use @{storyboard_ref} as the main {panel_sayisi}-panel storyboard reference
+  for scene order, pacing, framing, emotional beats, and continuity.
+
+# Storyboard referans satiri - COK sayfa (15sn ustu isler, sayfa basina bir satir).
+# Seedance 2.5 kurali: referans verilen her varligin HEMEN ardindan o varligin
+# nasil kullanilacagini soyleyen bir cumle gelir. Sayfanin hangi beat'leri ve
+# hangi zaman araligini kapsadigi bu yuzden satirin icinde yaziliyor.
+storyboard_sayfa_satiri: >-
+  Use @{storyboard_ref} as storyboard sheet {sayfa} of {sayfa_toplam}, covering
+  beats {beat_ilk}-{beat_son} ({zaman_ilk}-{zaman_son}s) of the timeline, for
+  scene order, pacing, framing, emotional beats, and continuity.
+
+# Cok sayfali iste sayfa referanslarindan SONRA eklenen baglama satiri.
+# DIKKAT: bu satir eskiden "Panel numbers are global and continuous..." diyordu.
+# Storyboard sayfalari artik damgasiz uretiliyor (bkz. docs/damga_tuzagi.md), o
+# yuzden metin gorunmeyen bir numaraya atif yapmiyor; sira okuma duzeninden
+# veriliyor ve sonda acik damga yasagi tekrarlaniyor.
+storyboard_sayfa_kapanisi: >-
+  Read the sheets in order: sheet 1 first, then sheet {sayfa_toplam}. The panels
+  run continuously across the sheets in reading order, so the last panel of
+  sheet {sayfa_toplam} is the final beat of the video. The sheets carry no
+  numbers, labels or text of any kind; never render a number, label, caption or
+  panel marking into the video.
+
+# Ana talimat
+ana_talimat: >-
+  Create a single {sure}-second vertical 9:16 stylized 3D family-animation
+  video set in {ortam}, as one continuous take. Panels are read left to right,
+  top row first, and map to the timeline in order. Follow the
+  {panel_sayisi}-panel storyboard closely and hold each beat for its stated
+  time range.
+
+# Beat satiri - her panel icin bir tane.
+# KURAL: zaman damgasi ZORUNLU. Kaynak videonun analizinden gelen gercek
+# zaman araligi yazilir; modelin ritmi kaynakla ayni tutmasini sagliyor.
+beat_satiri: "Beat {n} ({zaman}s): {aciklama}"
+
+# Sonda sabit kurallar (config/stil.yaml -> video_kurallari)
+kapanis: "{video_kurallari}"
+
+# Rol -> Ingilizce karsilik (karakter_satiri icin)
+rol_ceviri:
+  baba: "the father"
+  anne: "the mother"
+  "cocuk (kiz)": "the little girl"
+  "cocuk (bebek erkek)": "the baby boy"
+
+# Beat yazarken uyulacak kurallar (LLM'e verilir)
+# Beat yazarken uyulacak kurallar (LLM'e verilir).
+# Not: maddeler ':' ve '"' icerdigi icin blok-scalar kullaniliyor - duz liste
+# YAML parse hatasi veriyordu.
+beat_yazim_kurallari: |
+  - Her beat somut fiziksel eylem tarif etsin; duyguyu adlandirma, davranisla goster.
+  - Riskli/abartili hareketlerde guvenlik kaydi ekle. Ornek kalip: "rushed and
+    energetic ... but still physically safe, natural, and controlled. Do not
+    literally throw or drop the children."
+  - Kamera hareketini beat icine goM: push-in, orbit, whip-pan, static, handheld.
+  - Karakter kimligini her beatte adiyla an, zamir kullanma.
+  - Son beat cozulmeyle bitsin - sicak, tamamlanmis bir aile ani.
+  - Kaynak videodan YALNIZCA yapi devralinir; ozgun gorsel tasarim kopyalanmaz.
+  - 15sn ustu iste anlati orta noktada dusmemeli: beat 12-13 gecisi (sayfa
+    sinirini) bir DONUS noktasi tasisin, nefes molasi degil. Sayfa siniri
+    izleyiciye gorunmez olmali.
+  - Reveal panelleri tek karede buluşur. Yanilgiyi kuran oge ile gercegi acan
+    oge AYNI panelde olmali; iki ayri kesme reveal'i oldurur.
+
+# ---------------------------------------------------------------------------
+# KURAL: Kullanicinin verdigi ornek prompt bir SABLON DEGIL, kullanim ornegidir.
+# Yalnizca yapisi devralinir (referans satirlari -> ana talimat -> beat'ler ->
+# kapanis). Ornekteki sahneye ozgu ifadeler ("home environment", "home
+# continuity", cocuk devretme beat'leri) korukorune kopyalanmaz; her uretimde
+# o isin sahnesine gore yeniden yazilir.
+#
+# Duzeltilenler:
+#   - "in the same warm cinematic home environment" -> {ortam} parametresi
+#   - "outfits, and home continuity"                -> "scene continuity"
+#   - "Beat {n}:"                                   -> "Beat {n} ({zaman}s):"
+#   - tek storyboard_satiri -> storyboard_sayfa_satiri (Seedance 2.5, 15sn ustu)
+#   - "Use @{topview_ref} as ..." -> "Use @{etiket} as ..." (kadro.yaml ID'leri
+#     TopView tarafindan parse edilmiyordu; karakterler de dosya olarak yuklenir)
+#
+# SEEDANCE 2.5 NOTU: @ ile referans verilen her varligin hemen ardindan
+# kullanim cumlesi gelmeli (brosur kurali). Varliklar yukleme sirasina gore
+# otomatik numaralanir -> @Image1, @Video1, @Audio1. Esleme:
+# isler/<kod>/referans_eslesme.json
+#
+# YUKLEME SIRASI = NUMARALANDIRMA. Tek gecerli referans bicimi budur; prompt'a
+# yazilan her @ etiketi gercekten yuklenmis bir dosyaya karsilik gelmeli.
+# Sira prompt_uretici.referans_plani() tarafindan uretilir:
+#   once storyboard sayfalari (@Image1..@ImageS), sonra karakterler
+#   (@ImageS+1..), sahnede gorundukleri sirayla.

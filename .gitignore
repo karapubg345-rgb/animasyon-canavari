@@ -1,0 +1,22 @@
+# Gizli anahtarlar — asla commit etme
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Kullanıcının kendi üretimleri ve karakterleri repoya girmez
+isler/*
+!isler/.gitkeep
+karakterlerim/*
+!karakterlerim/ornek/
+karakterlerim/ornek/*.png
+karakterlerim/ornek/*.jpg
+karakterlerim/ornek/*.webp
+
+# Arayüz durumu ve yedekler
+.arayuz/
+sunucu.log
+*.bak
+*.bak.*

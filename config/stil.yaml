@@ -1,0 +1,26 @@
+# Kalici stil bloklari - her gorsel prompt'una eklenir. Ingilizce tutulur.
+
+stil_blogu: >-
+  Stylized 3D family-animation render, Pixar-like appeal, soft subsurface skin
+  shading, warm cinematic lighting, shallow depth of field, expressive faces,
+  clean readable silhouettes, warm earthy neutral palette, high
+  production value. Environment is specified separately per scene.
+
+# "panel number / digit / numeral" maddeleri bilerek burada. Storyboard sayfasi
+# Seedance'a referans olarak gidiyor; panele basilan her damga video karelerine
+# kopyalaniyor (bkz. docs/damga_tuzagi.md). Bu maddeleri silme.
+negatif_prompt: >-
+  photograph, photorealistic, real human, live action, 2D anime, manga, chibi,
+  flat vector, oversaturated neon colors, text, subtitles, captions, watermark,
+  logo, panel number, panel label, numbers, digits, numerals, timecode,
+  frame counter, corner marking, distorted hands, extra fingers, deformed face,
+  blurry, low resolution, uncanny proportions.
+
+# Video prompt'unun sonuna eklenen sabit kurallar
+video_kurallari: >-
+  Preserve exact character identities, outfits, and scene continuity. Fast
+  social-video pacing, quick clean cuts, expressive facial animation, dynamic
+  but readable motion. No text, no subtitles, no logos. Never burn a number,
+  digit, label, caption or panel marking into any frame, and never reproduce
+  the storyboard's grid, gutters or sheet layout - the storyboard is a guide to
+  scene order only, not something to be drawn.
