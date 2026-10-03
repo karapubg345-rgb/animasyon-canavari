@@ -462,7 +462,9 @@ async function durumYukle(yenile) {
   $("#kurulum").replaceChildren(
     rozet(d.claude ? "Claude Code kurulu" : "Claude Code yok", d.claude ? "ok" : "hata"),
     rozet(d.pipeline_gecerli ? "Pipeline hazır" : "Pipeline bulunamadı", d.pipeline_gecerli ? "ok" : "hata"),
-    rozet(d.apify ? "Apify token var" : "Apify token yok (.env)", d.apify ? "ok" : "uyari"));
+    rozet(d.apify ? "Apify token var" : "Apify token yok (.env)", d.apify ? "ok" : "uyari"),
+    // Hangi kurulumun açık olduğu görünsün: iki klasör varken yanlışını açmak kolay.
+    el("span", { className: "alt", style: "margin:0;font:400 12px var(--mono);word-break:break-all", textContent: "Klasör: " + d.pipeline }));
 
   const pl = $("#platformlar"); pl.replaceChildren();
   for (const p of d.platformlar) {

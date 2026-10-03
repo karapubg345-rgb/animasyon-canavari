@@ -856,16 +856,38 @@ class Isleyici(BaseHTTPRequestHandler):
         return self._dosya(hedef, tip)
 
 
+class _Sunucu(ThreadingHTTPServer):
+    # HTTPServer adresi yeniden kullanmaya izin verir; Windows'ta bu, dolu bir
+    # porta ikinci bir sunucunun HATASIZ bağlanması demek. İki kurulum aynı anda
+    # açıkken tarayıcı rastgele birine düşüyor ve kullanıcı başka bir klasörün
+    # işlerini/karakterlerini görüyordu. Kapalıyken dolu port OSError verir.
+    allow_reuse_address = sys.platform != "win32"
+
+
+def _sunucu_ac() -> ThreadingHTTPServer:
+    """İstenen port doluysa sıradaki boş portu bulur (başka bir kurulum ya da program)."""
+    for port in range(PORT, PORT + 20):
+        try:
+            sunucu = _Sunucu(("127.0.0.1", port), Isleyici)
+        except OSError:
+            continue
+        if port != PORT:
+            print(f"UYARI: {PORT} portu dolu (başka bir Animasyon Canavarı ya da program açık olabilir).")
+            print(f"       Bu kurulum {port} portunda açılıyor.")
+        return sunucu
+    raise SystemExit(f"{PORT}-{PORT + 19} arasındaki portların hepsi dolu. .env'de ARAYUZ_PORT ile başka bir port seç.")
+
+
 def main() -> None:
     # Windows konsolu cp1254; Türkçe/ok işareti basınca UnicodeEncodeError verir.
     for akim in (sys.stdout, sys.stderr):
         if hasattr(akim, "reconfigure"):
-            akim.reconfigure(encoding="utf-8", errors="replace")
+            akim.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
     durum_yukle()
-    sunucu = ThreadingHTTPServer(("127.0.0.1", PORT), Isleyici)
-    adres = f"http://127.0.0.1:{PORT}"
+    sunucu = _sunucu_ac()
+    adres = f"http://127.0.0.1:{sunucu.server_address[1]}"
     print(f"Animasyon Canavarı → {adres}")
-    print(f"Pipeline: {PIPELINE_KOK}")
+    print(f"Klasör: {PIPELINE_KOK}")
     if "--tarayici-acma" not in sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(adres)).start()
     try:
