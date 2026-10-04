@@ -95,7 +95,7 @@ izinleri arayüz önceden verdiği için **üretim sırasında sana izin soran b
 1. Platformda hesap aç: [Higgsfield](https://higgsfield.ai/?fpr=serkan-e69d0e) ·
    [TopView](https://www.topview.ai/?via=serkan) ·
    [OpenArt](https://tolt.link/serkan20)
-   *(reklam / iş birliği linkleri)*
+   *(reklam linkleri)*
 2. [claude.ai → Ayarlar → Connectors](https://claude.ai/settings/connectors) → **Add custom connector**
 3. Adı istediğin gibi yaz, adresi yapıştır:
 

@@ -30,6 +30,20 @@ storyboard:
   # isler/<kod>/storyboard.json -> tuval.panel_sayisi ise TOPLAM panel (cok
   # sayfali iste 24). Ikisini karistirmak yarim anlati uretir.
   panel_sayisi: 12
+  # Sayfa basina en fazla sure. 30sn ustu is REDDEDILMEZ: sure bu degere gore
+  # tam sayi sayfalara bolunur (57sn -> 15+14+14+14), sayfalar ikiser gruplanip
+  # BOLUM olur ve her bolum ayri video olarak uretilip birlestirilir.
+  # 12 panel x 1.25sn tavan = 15sn; bunu buyutmek panel tavanini asar.
+  sayfa_basina_sn: 15
+  # Oran isi baslatirken secilir ve storyboard izgarasini belirler: panel hucresi
+  # videonun yonune yakin olmali, yoksa Seedance kadraji storyboard'dan yanlis okur.
+  # 12 panel iki oranda da sabit (sure/panel hesabi degismez).
+  #   9:16 -> 6x2, hucre ~0.59 (~9:16 dikey)
+  #   16:9 -> 4x3, hucre ~1.33 (4:3; 12 panelle 16:9 tuvalde ulasilabilen en yatay hucre)
+  # Asagidaki sutun/satir 9:16 icin varsayilandir; eski isler bunu kullanir.
+  oran_izgaralari:
+    "9:16": {sutun: 6, satir: 2}
+    "16:9": {sutun: 4, satir: 3}
   sutun: 6
   satir: 2
   # 4K kullanma: belirgin daha pahali, okunurluga katkisi yok. 2K yeterli.
@@ -76,6 +90,14 @@ storyboard:
 
 video:
   cikti_orani: "9:16"
+  # TUM video uretimleri 480p. Olculen (OpenArt, Seedance 2.0, 11sn, 9:16, sesli,
+  # normal mod, 5 Eki 2026): 720p = 880 kredi, 480p = 385 kredi. 720p bakiyeyi
+  # asti ve is video uretmeden bitti. Kullanici karari: bundan sonra hep 480p.
+  cozunurluk: "480p"
+  # Arayuzun sundugu secenekler. Oran isi baslatirken, cozunurluk video onayinda
+  # secilir; secilmezse yukaridaki varsayilanlar gecerli.
+  oranlar: ["9:16", "16:9"]
+  cozunurlukler: ["480p", "720p"]
   # MODEL BURADA SABIT DEGIL. Hangi modelin kullanilacagini storyboard.sure_dilimleri
   # belirler (<=15sn -> Seedance 2.0, 16-30sn -> Seedance 2.5) ve plan_yap()
   # plan.model olarak dondurur. Buraya tek model yazma - iki model de canli.
@@ -97,6 +119,13 @@ kredi:
   apify_min_kalan_usd: 0.30
   # Olculen gercek maliyet: 24 oge = $0.026  (~$0.0011/oge)
   apify_oge_basina_usd: 0.0011
+
+# Uretim beklerken Claude surekli sorgulamasin: Claude gorevi gonderip aşamayi
+# {"bekle": ...} ile bitirir, arayuz bu kadar bekleyip ayni oturumu uyandirir.
+# 30 x 120sn = 1 saat; asilirsa is hata olur, Devam et ile surdurulur.
+uretim_bekleme:
+  kontrol_araligi_sn: 120
+  en_fazla_kontrol: 30
 
 yollar:
   isler: isler

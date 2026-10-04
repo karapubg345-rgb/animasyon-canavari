@@ -35,7 +35,7 @@ Kurulum betiği Python, ffmpeg ve Claude Code'u kontrol eder, eksikleri senin on
 
 Videolar senin platform hesabında, senin kredinle üretilir. En az birini bağla:
 
-| Platform | Hesap | Claude'a bağlanacak MCP adresi |
+| Platform | Hesap *(reklam linki)* | Claude'a bağlanacak MCP adresi |
 |---|---|---|
 | **Higgsfield** | [Kayıt ol ↗](https://higgsfield.ai/?fpr=serkan-e69d0e) | `https://mcp.higgsfield.ai/mcp` |
 | **TopView** | [Kayıt ol ↗](https://www.topview.ai/?via=serkan) | `https://mcp.topview.ai/mcp` |
@@ -44,9 +44,6 @@ Videolar senin platform hesabında, senin kredinle üretilir. En az birini bağl
 Bağlamak için: [claude.ai → Ayarlar → Connectors](https://claude.ai/settings/connectors) →
 **Add custom connector** → adresi yapıştır → hesabınla giriş yap. Arayüzde
 **Bağlantıları yenile**'ye bastığında platform "Bağlı" görünür.
-
-> "Kayıt ol" bağlantıları **reklam / iş birliği linkidir**: üzerinden kayıt olursan
-> geliştiriciye komisyon gidebilir, sana ek bir maliyeti yoktur.
 
 ## Bilmen gerekenler
 
@@ -67,6 +64,7 @@ Bağlamak için: [claude.ai → Ayarlar → Connectors](https://claude.ai/settin
 |---|---|---|
 | ≤ 15 sn | Seedance 2.0 | 1 sayfa · 12 panel |
 | 16–30 sn | Seedance 2.5 | 2 sayfa · 24 panel |
+| 30 sn üstü | bölüm bölüm (2.5, kalan 2.0) → birleştirilir | her ~15 sn 1 sayfa · 12 panel |
 
 Model süreye göre otomatik seçilir. Ayrıntılı mimari ve kurallar: [CLAUDE.md](CLAUDE.md),
 [docs/seedance_2_5.md](docs/seedance_2_5.md), [docs/damga_tuzagi.md](docs/damga_tuzagi.md).

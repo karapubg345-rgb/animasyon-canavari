@@ -60,12 +60,15 @@ def _aday_kaydet(a, dizin: Path) -> None:
 # ---------------------------------------------------------------- komutlar
 
 
-def _sure_plani_yaz(p: dict, sure_sn: float) -> None:
-    """Kaynak suresinden uretim planini hesaplar ve ekrana yazar.
+def _sure_plani_yaz(p: dict, sure_sn: float, dizin: Path | None = None) -> None:
+    """Kaynak suresinden uretim planini hesaplar, ekrana ve plan.json'a yazar.
 
-    Seedance 2.5 ile 30sn'ye kadar BOLUNMEDEN uretiliyor; 15sn ustu isler cok
-    sayfali storyboard yoluna giriyor. bkz. docs/seedance_2_5.md
+    <=30sn tek gecis; 15sn ustu cok sayfali storyboard. 30sn ustu is reddedilmez:
+    sayfalar ikiser gruplanip bolum bolum uretilir ve birlestirilir.
+    bkz. docs/seedance_2_5.md
     """
+    import dataclasses
+
     from animasyon.uyarlama.sureleme import SureHatasi, plan_yap
 
     try:
@@ -74,11 +77,14 @@ def _sure_plani_yaz(p: dict, sure_sn: float) -> None:
         print(f"  UYARI: plan cikarilamadi - {e}")
         return
     print(f"  Plan: {plan.ozet()}")
+    if dizin is not None:
+        (dizin / "plan.json").write_text(
+            json.dumps(dataclasses.asdict(plan), ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     if plan.bolunmeli:
-        ust = p["seedance_2_5"]["sure_araligi_sn"][1]
         print(
-            f"  UYARI: kaynak {sure_sn:.1f}s > {ust}s. Seedance 2.5 en fazla "
-            f"{ust}s uretiyor; yapi birden fazla videoya BOLUNMELI."
+            f"  NOT: {sure_sn:.1f}s > 30s -> {plan.sayfa} storyboard sayfasi, "
+            f"{len(plan.bolumler)} bolum ayri uretilip birlestirilecek (plan.json)."
         )
     elif plan.sayfa > 1:
         print(
@@ -137,7 +143,7 @@ def cmd_ekle(a) -> int:
     _aday_kaydet(aday, dizin)
     print(f"  {aday.kisa_kod}  @{aday.sahip}  izl={aday.izlenme:,}  {aday.sure_sn:.1f}s")
 
-    _sure_plani_yaz(p, aday.sure_sn)
+    _sure_plani_yaz(p, aday.sure_sn, dizin)
 
     hedef = dizin / "kaynak.mp4"
     if hedef.exists():
@@ -244,7 +250,12 @@ def cmd_dogrula(a) -> int:
         print("  [ATLA ] prompt_*.txt yok")
 
     # 2) Seedance'a gidecek referanslar - "_denetim" ekli dosya asla yuklenmez
+    # Izgara isin oranina bagli (9:16 -> 6x2, 16:9 -> 4x3); storyboard.json'dan okunur.
     t = konf("pipeline")["storyboard"]
+    sbj = dizin / "storyboard.json"
+    if sbj.is_file():
+        t = {**t, **{k: v for k, v in json.loads(sbj.read_text(encoding="utf-8"))
+                     .get("tuval", {}).items() if k in ("sutun", "satir")}}
     # Tek sayfali eski isler "storyboard.png" adini kullaniyor; ikisi de taranir.
     sayfalar = sorted(
         s for s in dizin.glob("storyboard*.png") if "_denetim" not in s.stem
@@ -328,6 +339,77 @@ def cmd_denetim_kopyasi(a) -> int:
     return 0
 
 
+def cmd_son_kare(a) -> int:
+    """Bolum videosunun son karesini cikarir: bir sonraki bolumun devamlilik referansi."""
+    import subprocess
+
+    dizin = _is_bul(a.kod, a.hafta)
+    giris = dizin / f"video_bolum{a.no}.mp4"
+    if not giris.is_file():
+        raise SystemExit(f"Video yok: {giris}")
+    cikis = dizin / f"bolum{a.no}_son_kare.png"
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-y", "-sseof", "-0.2", "-i", str(giris),
+         "-update", "1", "-frames:v", "1", str(cikis)],
+        check=True,
+    )
+    print(f"  Yazildi: {cikis.relative_to(KOK)}  (bolum {a.no + 1}'e referans olarak yuklenir)")
+    return 0
+
+
+def cmd_birlestir(a) -> int:
+    """video_bolum1..N.mp4 -> video_ham.mp4. Bolumler ilk bolumun boyutuna olceklenip yeniden kodlanir."""
+    import subprocess
+
+    from animasyon.uretim import damga
+
+    dizin = _is_bul(a.kod, a.hafta)
+    plan = json.loads((dizin / "plan.json").read_text(encoding="utf-8"))         if (dizin / "plan.json").is_file() else {}
+    beklenen = len(plan.get("bolumler") or [])
+    parcalar = sorted(dizin.glob("video_bolum*.mp4"), key=lambda v: int(v.stem.removeprefix("video_bolum")))
+    if not parcalar:
+        raise SystemExit("video_bolum*.mp4 yok")
+    if beklenen and len(parcalar) != beklenen:
+        raise SystemExit(f"{beklenen} bolum bekleniyor, {len(parcalar)} video var")
+    cikis = dizin / "video_ham.mp4"
+    # concat demuxer ayni codec/boyut ister; bolumler farkli cozunurlukte donebiliyor,
+    # bu yuzden filtre yoluyla ilk bolumun boyutuna olceklenip yeniden kodlanir.
+    gir = [x for v in parcalar for x in ("-i", str(v))]
+    n = len(parcalar)
+    # Hedef boyut ilk bolumden: oran (9:16 / 16:9) ve cozunurluk isten ise degisir.
+    gy = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+         "stream=width,height", "-of", "csv=p=0", str(parcalar[0])],
+        capture_output=True, text=True,
+    ).stdout.strip().split(",")
+    w, h = (int(x) // 2 * 2 for x in gy[:2])
+    filtre = ""
+    for i, v in enumerate(parcalar):
+        filtre += (
+            f"[{i}:v]scale={w}:{h}:force_original_aspect_ratio=decrease,"
+            f"pad={w}:{h}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24[v{i}];"
+        )
+        sesli = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index",
+             "-of", "csv=p=0", str(v)], capture_output=True, text=True,
+        ).stdout.strip()
+        # Sessiz bolum concat'i bozar: suresi kadar sessizlik uretilir.
+        filtre += (
+            f"[{i}:a]aresample=48000,aformat=channel_layouts=stereo[a{i}];" if sesli else
+            f"anullsrc=r=48000:cl=stereo,atrim=duration={damga.video_suresi(v):.3f}[a{i}];"
+        )
+    filtre += "".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1[v][a]"
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-y", *gir, "-filter_complex", filtre, "-map", "[v]", "-map", "[a]",
+         "-c:v", "libx264", "-crf", "18", "-preset", "medium", "-c:a", "aac", "-b:a", "192k", str(cikis)],
+        check=True,
+    )
+    sure = damga.video_suresi(cikis)
+    print(f"  Yazildi: {cikis.relative_to(KOK)}  {n} bolum, {sure:.1f}s"
+          + (f" (plan {plan['sure_sn']}s)" if plan.get("sure_sn") else ""))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="animasyon")
     alt = p.add_subparsers(dest="komut", required=True)
@@ -338,7 +420,7 @@ def main(argv: list[str] | None = None) -> int:
     k.add_argument("--kadro", default="ornek")
     k.set_defaults(f=cmd_karakterler)
 
-    e = alt.add_parser("ekle", help="Instagram linkinden is olustur")
+    e = alt.add_parser("ekle", help="Linkten is olustur")
     e.add_argument("url")
     e.add_argument("--hafta", default=None)
     e.set_defaults(f=cmd_ekle)
@@ -367,6 +449,17 @@ def main(argv: list[str] | None = None) -> int:
     n.add_argument("kod")
     n.add_argument("--hafta", default=None)
     n.set_defaults(f=cmd_denetim_kopyasi)
+
+    sk = alt.add_parser("son-kare", help="Bolum videosunun son karesi (sonraki bolume referans)")
+    sk.add_argument("kod")
+    sk.add_argument("no", type=int)
+    sk.add_argument("--hafta", default=None)
+    sk.set_defaults(f=cmd_son_kare)
+
+    b = alt.add_parser("birlestir", help="video_bolumN.mp4 dosyalarini video_ham.mp4'te birlestirir")
+    b.add_argument("kod")
+    b.add_argument("--hafta", default=None)
+    b.set_defaults(f=cmd_birlestir)
 
     a = p.parse_args(argv)
     return a.f(a)

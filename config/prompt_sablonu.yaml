@@ -49,9 +49,19 @@ storyboard_sayfa_kapanisi: >-
   numbers, labels or text of any kind; never render a number, label, caption or
   panel marking into the video.
 
+# 30sn ustu is: 2. bolumden itibaren onceki bolumun son karesi referans olarak
+# yuklenir (prompt_uretici.referans_plani, tur=onceki_kare). ILK KARE olarak
+# DEGIL referans olarak verilir - ilk kare modu Akilli Oran'a duser ve cikti
+# girdinin oranini devralir. Bu satir olmazsa bolumler dikis yerinde kopar:
+# karakter konumu, isik ve kiyafet bolumden bolume sicrar.
+onceki_bolum_satiri: >-
+  Use @{etiket} as the last frame of the previous part of this same video: this
+  part continues directly from that moment, so open with the same characters in
+  the same positions, outfits, lighting and setting, with no visible jump.
+
 # Ana talimat
 ana_talimat: >-
-  Create a single {sure}-second vertical 9:16 stylized 3D family-animation
+  Create a single {sure}-second {yon} {oran} stylized 3D family-animation
   video set in {ortam}, as one continuous take. Panels are read left to right,
   top row first, and map to the timeline in order. Follow the
   {panel_sayisi}-panel storyboard closely and hold each beat for its stated

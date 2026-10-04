@@ -51,6 +51,49 @@ class PromptUretici:
         n = self.sayfa_panel
         return self.sb["paneller"][(sayfa - 1) * n : sayfa * n]
 
+    @property
+    def oran(self) -> str:
+        return self.sb["video"].get("oran", "9:16")
+
+    @property
+    def yon(self) -> str:
+        """Oranin Ingilizce yonu: "9:16" -> vertical, "16:9" -> horizontal."""
+        g, y = (float(x) for x in self.oran.split(":"))
+        return "vertical" if y > g else "horizontal" if g > y else "square"
+
+    # ---- bolumler: 30sn ustu is sayfalari ikiser gruplanip ayri uretilir ----
+    @property
+    def bolumler(self) -> list[dict]:
+        """Bolum listesi. plan.json (ekle yazar) varsa oradan, yoksa ikiser sayfa."""
+        pj = self.dizin / "plan.json"
+        if pj.is_file():
+            b = json.loads(pj.read_text(encoding="utf-8")).get("bolumler") or []
+            if b and b[-1]["sayfa_son"] == self.sayfa_sayisi:
+                return b
+        return [
+            {"no": i // 2 + 1, "sayfa_ilk": i + 1, "sayfa_son": min(i + 2, self.sayfa_sayisi)}
+            for i in range(0, self.sayfa_sayisi, 2)
+        ]
+
+    def _bolum(self, no: int | None) -> dict | None:
+        if no is None:
+            return None
+        b = next((x for x in self.bolumler if x["no"] == no), None)
+        if b is None:
+            raise ValueError(f"bolum {no} yok (1..{len(self.bolumler)})")
+        return b
+
+    def _bolum_sayfalari(self, bolum: dict | None) -> list[int]:
+        if bolum is None:
+            return list(range(1, self.sayfa_sayisi + 1))
+        return list(range(bolum["sayfa_ilk"], bolum["sayfa_son"] + 1))
+
+    @staticmethod
+    def _goreli_zaman(zaman: str, bas: float) -> str:
+        """Global "31.25-32.50" araligini bolum basina gore kaydirir."""
+        a, b = (float(x) - bas for x in zaman.split("-"))
+        return f"{a:.2f}-{b:.2f}"
+
     @staticmethod
     def _zaman_araligi(paneller: list[dict]) -> tuple[str, str]:
         """Panel dizisinin ilk basi ve son sonu ("0.00", "15.00")."""
@@ -58,7 +101,7 @@ class PromptUretici:
 
     # ---- karakter tanimi: kimlik (sabit) + kiyafet (sahneye ozel) ----
     # ---- referans plani: yukleme sirasi @ImageN numaralarini belirler ----
-    def referans_plani(self) -> list[dict]:
+    def referans_plani(self, bolum: int | None = None) -> list[dict]:
         """Uretim platformuna hangi dosyanin kacinci yuklenecegini ve etiketini dondurur.
 
         TUZAK: karakterler eskiden kadro.yaml'daki kalici platform ID'leriyle (`topview_ref`)
@@ -66,9 +109,15 @@ class PromptUretici:
         metin kaliyorlar ve referans hic devreye girmiyor. Yalnizca YUKLENEN
         dosyalar <<<ImageN>>> oluyor, o yuzden karakterler de storyboard
         sayfalari gibi yuklenir. Sira: once sayfalar, sonra karakterler.
+
+        bolum verilirse (30sn ustu is) yalnizca o bolumun sayfalari ve
+        karakterleri girer; 2. bolumden itibaren sona onceki bolumun son karesi
+        eklenir (bolumN_son_kare.png) ki dikis yerinde sahne kopmasin.
         """
+        b = self._bolum(bolum)
+        sayfalar = self._bolum_sayfalari(b)
         plan: list[dict] = []
-        for s in range(1, self.sayfa_sayisi + 1):
+        for s in sayfalar:
             ad = (
                 f"storyboard_sayfa{s}.png" if self.sayfa_sayisi > 1 else "storyboard.png"
             )
@@ -83,7 +132,8 @@ class PromptUretici:
                 "kapsam": f"beat {sp[0]['n']}-{sp[-1]['n']} ({bas}-{son}s)",
             })
         kadro_ad = self.sb["kadro"]
-        for cid in self.kullanilan_karakterler():
+        paneller = [x for s in sayfalar for x in self.sayfa_panelleri(s)]
+        for cid in self.kullanilan_karakterler(paneller):
             c = self.kadro["karakterler"][cid]
             plan.append({
                 "sira": len(plan) + 1,
@@ -92,6 +142,13 @@ class PromptUretici:
                 "id": cid,
                 "ad": c["ad"],
                 "dosya": f"karakterlerim/{kadro_ad}/{c['referans_dosya']}",
+            })
+        if b and b["no"] > 1:
+            plan.append({
+                "sira": len(plan) + 1,
+                "etiket": f"Image{len(plan) + 1}",
+                "tur": "onceki_kare",
+                "dosya": f"bolum{b['no'] - 1}_son_kare.png",
             })
         return plan
 
@@ -161,7 +218,7 @@ class PromptUretici:
             )
         satirlar = [
             baslik,
-            f"Each panel is a vertical {self.sb['video']['oran']} frame of the same "
+            f"Each panel is a {self.yon} {self.oran} frame of the same "
             "continuous scene, in consistent stylized 3D family-animation style.",
             "",
             f"SETTING: {ort.get('mekan', '')}. {ort.get('arka_plan', '')}. "
@@ -274,23 +331,37 @@ class PromptUretici:
         return f"{mekan} with {arka}" if arka else mekan
 
     # ---- 2) Seedance 2.5 video promptu ----
-    def video_promptu(self, storyboard_ref: str | list[str] | None = None) -> str:
+    def video_promptu(
+        self, storyboard_ref: str | list[str] | None = None, bolum: int | None = None
+    ) -> str:
         """Video promptunu uretir.
 
         Etiketler referans_plani()'ndan gelir - yukleme sirasi @ImageN'i belirler.
         storyboard_ref artik gerekmiyor; verilirse yalnizca sayfa etiketlerini
         ezmek icin kullanilir (eski cagrilar kirilmasin diye tutuluyor).
+
+        bolum verilirse yalnizca o bolumun promptu cikar: sayfalar bolum icinde
+        1'den numaralanir, zamanlar bolum basina gore kayar, sure bolum suresidir.
         """
-        plan = self.referans_plani()
+        b = self._bolum(bolum)
+        sayfa_nolari = self._bolum_sayfalari(b)
+        bpaneller = [x for s in sayfa_nolari for x in self.sayfa_panelleri(s)]
+        bas_sn = float(bpaneller[0]["zaman"].split("-")[0]) if b else 0.0
+        son_sn = float(bpaneller[-1]["zaman"].split("-")[-1])
+        plan = self.referans_plani(bolum)
         sayfalar = [p for p in plan if p["tur"] == "storyboard"]
         karakterler = [p for p in plan if p["tur"] == "karakter"]
+        onceki = next((p for p in plan if p["tur"] == "onceki_kare"), None)
+        # Bolum promptunda beat'ler de 1'den sayilir: "24-panel storyboard" deyip
+        # Beat 25..48 yazmak modele iki ayri numara sistemi verir.
+        ilk_n = bpaneller[0]["n"] - 1 if b else 0
         if storyboard_ref is not None:
             refler = (
                 [storyboard_ref] if isinstance(storyboard_ref, str) else list(storyboard_ref)
             )
-            if len(refler) != self.sayfa_sayisi:
+            if len(refler) != len(sayfa_nolari):
                 raise ValueError(
-                    f"{self.sayfa_sayisi} storyboard sayfasi var, {len(refler)} referans verildi"
+                    f"{len(sayfa_nolari)} storyboard sayfasi var, {len(refler)} referans verildi"
                 )
         else:
             refler = [p["etiket"] for p in sayfalar]
@@ -320,27 +391,29 @@ class PromptUretici:
             parcalar.append(
                 " ".join(sab["storyboard_satiri"].split()).format(
                     storyboard_ref=refler[0],
-                    panel_sayisi=self.sb["tuval"]["panel_sayisi"],
+                    panel_sayisi=len(bpaneller),
                 )
             )
         else:
             for i, ref in enumerate(refler, 1):
-                sp = self.sayfa_panelleri(i)
-                bas, son = self._zaman_araligi(sp)
+                sp = self.sayfa_panelleri(sayfa_nolari[i - 1])
+                bas, son = self._zaman_araligi(
+                    [{"zaman": self._goreli_zaman(x["zaman"], bas_sn)} for x in sp]
+                )
                 parcalar.append(
                     " ".join(sab["storyboard_sayfa_satiri"].split()).format(
                         storyboard_ref=ref,
                         sayfa=i,
                         sayfa_toplam=len(refler),
-                        beat_ilk=sp[0]["n"],
-                        beat_son=sp[-1]["n"],
+                        beat_ilk=sp[0]["n"] - ilk_n,
+                        beat_son=sp[-1]["n"] - ilk_n,
                         zaman_ilk=bas,
                         zaman_son=son,
                     )
                 )
             kapanis = " ".join(sab["storyboard_sayfa_kapanisi"].split()).format(
                 sayfa_toplam=len(refler),
-                beat_son=self.sb["paneller"][-1]["n"],
+                beat_son=bpaneller[-1]["n"] - ilk_n,
             )
             if self.metin_istisnasi:
                 # Sablon metni "sayfalar hicbir yazi tasimaz" diyor; istisnali
@@ -356,17 +429,25 @@ class PromptUretici:
                     "never render a panel number, label, caption or panel marking",
                 )
             parcalar.append(kapanis)
+        if onceki:
+            parcalar.append(
+                " ".join(sab["onceki_bolum_satiri"].split()).format(etiket=onceki["etiket"])
+            )
         parcalar.append(
             " ".join(sab["ana_talimat"].split()).format(
-                sure=self.sb["video"]["toplam_sure_sn"],
+                sure=round(son_sn - bas_sn) if b else self.sb["video"]["toplam_sure_sn"],
                 ortam=self._ortam_ifadesi(),
-                panel_sayisi=self.sb["tuval"]["panel_sayisi"],
+                panel_sayisi=len(bpaneller),
+                yon=self.yon,
+                oran=self.oran,
             )
         )
-        for p in self.sb["paneller"]:
+        for p in bpaneller:
             parcalar.append(
                 sab["beat_satiri"].format(
-                    n=p["n"], zaman=p["zaman"], aciklama=p["aksiyon"]
+                    n=p["n"] - ilk_n,
+                    zaman=self._goreli_zaman(p["zaman"], bas_sn) if b else p["zaman"],
+                    aciklama=p["aksiyon"],
                 )
             )
         nesne = self._sahne_nesnesi_satiri()

@@ -8,51 +8,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* Tasarım sistemi: Stitch "Canavar Creative Engine" (proje 2251739270271208393) */
+  /* Tasarım sistemi: Stitch "Animasyon Canavarı - Yenilenen Arayüz" (proje 14720836443959700023) */
   :root {
-    --zemin: #0d0e15; --panel: #13151f; --yukseltilmis: #1a1d2b; --gomme: #090a0f;
-    --sinir: #202334; --parilti: #272a3b;
-    --yazi: #f8fafc; --soluk: #94a3b8; --sonuk: #64748b;
-    --mor: #8b5cf6; --orta: #a855f7; --magenta: #ec4899;
-    --ok: #10b981; --uyari: #f59e0b; --hata: #f43f5e;
-    --gradyan: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-    --baslik: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    --zemin: #0b1820; --panel: #14232c; --yukseltilmis: #1c3039; --gomme: #09141b;
+    --sinir: #2d4650; --parilti: #3b5a63;
+    --yazi: #fff8ed; --soluk: #cad7d2; --sonuk: #aebfbb;
+    --vurgu: #ff8a65; --vurgu-acik: #ffbf9e; --altin: #f4c96b;
+    --ok: #71d6a0; --uyari: #f4c96b; --hata: #ff9f9a;
+    --gradyan: linear-gradient(135deg, #ff8a65 0%, #f4a968 60%, #f4c96b 100%);
+    --baslik: "Inter", "Segoe UI", system-ui, sans-serif;
     --govde: "Inter", "Segoe UI", system-ui, sans-serif;
     --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
   }
   * { box-sizing: border-box; }
   html { color-scheme: dark; }
-  body { margin: 0; background: var(--zemin); color: var(--yazi); font: 15px/1.55 var(--govde);
-    background-image: radial-gradient(#1c2030 1px, transparent 1px); background-size: 22px 22px; }
-  body::before { content: ""; position: fixed; inset: -20% 0 auto; height: 520px; pointer-events: none; z-index: 0;
-    background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(139, 92, 246, .22), transparent 70%); }
-  main { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 36px 16px 72px; }
+  body { margin: 0; background: var(--zemin); color: var(--yazi); font: 15px/1.55 var(--govde); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: 400px; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 65% at 18% 0%, rgba(244, 201, 107, .11), transparent 75%); }
+  main { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 22px 24px 60px; }
 
   /* başlık + sekmeler */
-  header { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
-  .maskot { flex: none; width: 56px; height: 56px; border-radius: 16px; background: var(--gradyan);
-    display: grid; place-items: center; box-shadow: 0 0 28px rgba(168, 85, 247, .45), inset 0 1px 0 rgba(255,255,255,.25); }
-  .maskot svg { width: 36px; height: 36px; }
-  h1 { font: 800 30px/1.15 var(--baslik); letter-spacing: -0.025em; margin: 0; }
+  .ust-cubuk { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 10px 18px;
+    margin-bottom: 20px; background: var(--panel); border: 1px solid var(--sinir); border-radius: 12px; }
+  header { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .maskot { flex: none; width: 44px; height: 44px; border-radius: 10px; background: var(--gomme); border: 1px solid var(--parilti);
+    display: grid; place-items: center; }
+  .maskot svg { width: 40px; height: 40px; }
+  h1 { font: 700 18px/1.2 var(--baslik); letter-spacing: -0.025em; margin: 0; white-space: nowrap; }
   h1 span { background: var(--gradyan); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .alt { color: var(--soluk); font-size: 14px; margin: 4px 0 0; }
-  nav.sekmeler { display: flex; gap: 4px; padding: 4px; background: var(--panel); border: 1px solid var(--sinir);
-    border-radius: 12px; margin-bottom: 22px; width: fit-content; max-width: 100%; overflow-x: auto; }
-  nav.sekmeler a { font: 500 14px var(--govde); color: var(--soluk); text-decoration: none; padding: 8px 16px; border-radius: 9px;
+  header .alt { font-size: 11px; color: var(--sonuk); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  nav.sekmeler { display: flex; gap: 4px; padding: 4px; width: fit-content; max-width: 100%; overflow-x: auto; }
+  nav.sekmeler a { font: 600 13px var(--govde); color: var(--soluk); text-decoration: none; padding: 10px 14px; border-radius: 8px;
     white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
   nav.sekmeler a:hover { color: #fff; }
-  nav.sekmeler a.aktif { background: var(--yukseltilmis); color: #fff; box-shadow: inset 0 0 0 1px var(--parilti); }
-  nav.sekmeler .sayac { font: 500 11px var(--mono); background: rgba(139, 92, 246, .18); color: #c4b5fd; border-radius: 6px; padding: 1px 6px; }
+  nav.sekmeler a.aktif { background: rgba(255, 138, 101, .14); color: var(--vurgu-acik); box-shadow: inset 0 0 0 1px rgba(255, 138, 101, .38); }
+  nav.sekmeler .sayac { font: 500 11px var(--mono); background: rgba(255, 138, 101, .16); color: var(--vurgu-acik); border-radius: 6px; padding: 1px 6px; }
 
   /* kartlar */
-  section { background: rgba(19, 21, 31, .85); backdrop-filter: blur(16px); border: 1px solid var(--sinir);
-    border-radius: 16px; padding: 22px; margin-bottom: 18px; position: relative; }
+  section { background: var(--panel); border: 1px solid var(--sinir);
+    border-radius: 12px; padding: 20px; margin-bottom: 18px; position: relative; }
   section::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; border-radius: 16px 16px 0 0;
-    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, .45), transparent); }
+    background: linear-gradient(90deg, transparent, rgba(244, 201, 107, .42), transparent); }
   .kart-bas { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
   h2 { font: 600 18px/1.3 var(--baslik); letter-spacing: -0.01em; margin: 0; display: flex; align-items: center; gap: 12px; }
   .adim { width: 28px; height: 28px; flex: none; border-radius: 9px; display: grid; place-items: center;
-    font: 600 13px var(--mono); color: #fff; background: var(--gradyan); box-shadow: 0 0 14px rgba(168, 85, 247, .35); }
+    font: 600 13px var(--mono); color: var(--gomme); background: var(--gradyan); box-shadow: 0 0 14px rgba(255, 138, 101, .25); }
   h3 { font: 600 15px/1.3 var(--baslik); margin: 0; }
   .satir { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
@@ -63,24 +64,27 @@
   .rozet.ok { background: rgba(16, 185, 129, .12); color: var(--ok); }
   .rozet.uyari { background: rgba(245, 158, 11, .12); color: var(--uyari); }
   .rozet.hata { background: rgba(244, 63, 94, .12); color: var(--hata); }
-  .rozet.mor { background: rgba(139, 92, 246, .14); color: #c4b5fd; }
+  button.durdur { font: 600 12px var(--govde); padding: 5px 11px; border-radius: 8px; cursor: pointer;
+    background: transparent; color: var(--hata); border: 1px solid var(--hata); }
+  button.durdur:hover:not(:disabled) { background: var(--hata); color: var(--gomme); }
+  .rozet.mor { background: rgba(255, 138, 101, .14); color: var(--vurgu-acik); }
   .rozet.canli::before { animation: nabiz 1.4s ease-in-out infinite; }
   @keyframes nabiz { 50% { opacity: .25; } }
 
   /* platformlar */
-  .platformlar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-  .platform { background: var(--yukseltilmis); border: 1px solid var(--parilti); border-radius: 14px; padding: 16px;
-    display: flex; flex-direction: column; gap: 14px; transition: border-color .2s; }
-  .platform:hover { border-color: rgba(139, 92, 246, .35); }
-  .platform.bagli { border-color: rgba(16, 185, 129, .3); }
+  .platformlar { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .platform { background: var(--yukseltilmis); border: 1px solid var(--sinir); border-radius: 9px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px; transition: border-color .2s; }
+  .platform:hover { border-color: rgba(255, 138, 101, .45); }
+  .platform.bagli { border-color: rgba(78, 222, 163, .32); }
   .platform-bas { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  details summary { cursor: pointer; font: 500 13px var(--govde); color: #c4b5fd; list-style: none; display: flex; align-items: center; gap: 6px; }
+  details summary { cursor: pointer; font: 500 13px var(--govde); color: var(--vurgu-acik); list-style: none; display: flex; align-items: center; gap: 6px; }
   details summary::-webkit-details-marker { display: none; }
   details summary::before { content: "›"; font-size: 16px; transition: transform .2s; }
   details[open] summary::before { transform: rotate(90deg); }
   details ol { padding-left: 18px; margin: 10px 0 0; font-size: 13px; color: var(--soluk); display: grid; gap: 6px; }
   details ol b { color: var(--yazi); font-weight: 500; }
-  details a { color: #c4b5fd; }
+  details a { color: var(--vurgu-acik); }
   .kopya { display: flex; align-items: center; gap: 6px; background: var(--gomme); border: 1px solid var(--parilti);
     border-radius: 8px; padding: 6px 6px 6px 10px; margin-top: 4px; }
   .kopya code { flex: 1; min-width: 0; font: 500 11.5px var(--mono); color: var(--yazi); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -93,50 +97,55 @@
   a.dugme, button { font: 500 14px var(--govde); border-radius: 10px; padding: 10px 16px; border: 1px solid var(--parilti);
     background: var(--yukseltilmis); color: var(--soluk); cursor: pointer; text-decoration: none; display: inline-flex;
     align-items: center; justify-content: center; gap: 8px; transition: border-color .15s, color .15s, filter .15s, box-shadow .15s; }
-  a.dugme:hover, button:hover { border-color: var(--mor); color: #fff; }
-  .ana { background: var(--gradyan) !important; color: #fff !important; border: 0 !important; font-weight: 600 !important;
+  a.dugme:hover, button:hover { border-color: var(--vurgu); color: var(--yazi); }
+  .ana { background: var(--gradyan) !important; color: #18222b !important; border: 0 !important; font-weight: 700 !important;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
-  .ana:hover { filter: brightness(1.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 0 22px rgba(168, 85, 247, .45); }
+  .ana:hover { filter: brightness(1.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 0 22px rgba(255, 138, 101, .32); }
   button:disabled { opacity: .45; cursor: not-allowed; filter: none !important; box-shadow: none !important; }
   .hayalet { background: transparent; border-color: transparent; }
   .hayalet:hover { background: rgba(255,255,255,.05); border-color: transparent; }
-  .kucuk { padding: 6px 11px; font-size: 13px; border-radius: 8px; }
+  .kucuk { padding: 8px 11px; font-size: 13px; border-radius: 8px; }
+  :is(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--vurgu-acik); outline-offset: 3px; }
 
-  form.is-formu { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; }
-  .girdi { position: relative; display: flex; align-items: center; }
-  .girdi svg { position: absolute; left: 14px; width: 18px; height: 18px; color: var(--sonuk); pointer-events: none; }
+  form.is-formu { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 12px; }
+  .girdi { position: relative; display: block; grid-column: 1 / -1; }
+  .alan-baslik { display: block; margin-bottom: 7px; font: 600 12px var(--govde); color: var(--soluk); }
+  .girdi svg { position: absolute; left: 14px; bottom: 12px; width: 18px; height: 18px; color: var(--sonuk); pointer-events: none; }
   input[type=url], input[type=text], select, textarea { font: 400 14px var(--govde); padding: 11px 13px; border-radius: 10px;
     border: 1px solid var(--parilti); background: var(--gomme); color: var(--yazi); outline: none; transition: border-color .15s, box-shadow .15s; width: 100%; }
   .is-formu input[type=url] { padding-left: 42px; }
-  select { width: auto; }
-  input:focus, select:focus, textarea:focus { border-color: var(--mor); box-shadow: 0 0 0 3px rgba(139, 92, 246, .2); }
+  select { width: auto; min-height: 44px; }
+  input:focus, select:focus, textarea:focus { border-color: var(--vurgu); box-shadow: 0 0 0 3px rgba(255, 138, 101, .22); }
   textarea { min-height: 76px; resize: vertical; line-height: 1.5; }
-  #baslat { padding: 12px 26px; font-size: 15px; }
+  #baslat { min-height: 44px; padding: 10px 24px; font-size: 14px; white-space: nowrap; }
   .form-hata { color: var(--hata); font-size: 13px; margin: 10px 0 0; }
-  .secim { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
-  .secim .etiket { font: 500 12px var(--govde); color: var(--sonuk); margin-right: 4px; }
-  .kar-sec { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; cursor: pointer;
-    border: 1px solid var(--parilti); background: var(--gomme); font: 500 13px var(--govde); color: var(--soluk); user-select: none; }
-  .kar-sec img, .kar-sec .bos { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: top; background: var(--yukseltilmis); }
-  .kar-sec input { display: none; }
-  .kar-sec:has(input:checked) { border-color: var(--mor); color: #fff; background: rgba(139, 92, 246, .14); }
+  .secim { display: grid; grid-template-columns: repeat(auto-fill, minmax(122px, 1fr)); gap: 10px; margin-top: 18px; }
+  .secim .etiket { grid-column: 1 / -1; font: 600 12px var(--govde); color: var(--soluk); }
+  .kar-sec { display: flex; flex-direction: column; gap: 7px; padding: 6px; border-radius: 9px; cursor: pointer; position: relative;
+    border: 1px solid var(--sinir); background: var(--yukseltilmis); font: 600 12px var(--govde); color: var(--soluk); user-select: none; min-width: 0; }
+  .kar-sec img, .kar-sec .bos { width: 100%; height: 82px; border-radius: 5px; object-fit: cover; object-position: center 25%; background: var(--gomme); }
+  .kar-sec input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .kar-sec:has(input:checked) { border-color: var(--vurgu); color: var(--yazi); background: rgba(255, 138, 101, .14); }
+  .kar-sec:has(input:checked)::after { content: "✓"; position: absolute; top: 11px; right: 11px; width: 21px; height: 21px;
+    border-radius: 50%; display: grid; place-items: center; color: #18222b; background: var(--vurgu); font-size: 13px; }
+  .kar-sec:has(input:focus-visible) { outline: 2px solid var(--vurgu-acik); outline-offset: 3px; }
   label.alan { display: grid; gap: 6px; font: 500 12.5px var(--govde); color: var(--soluk); }
   label.alan small { font-weight: 400; color: var(--sonuk); }
   .alanlar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .alanlar .genis { grid-column: 1 / -1; }
 
   /* iş paneli */
-  .uyari-kutu { border: 1px solid rgba(245, 158, 11, .35); background: rgba(245, 158, 11, .07); border-radius: 12px;
-    padding: 12px 14px; font-size: 13.5px; color: #fcd34d; }
-  .uyari-kutu.basari { border-color: rgba(16, 185, 129, .35); background: rgba(16, 185, 129, .07); color: #6ee7b7; }
-  .uyari-kutu.bilgi { border-color: rgba(139, 92, 246, .35); background: rgba(139, 92, 246, .08); color: #ddd6fe; }
+  .uyari-kutu { border: 1px solid rgba(244, 201, 107, .38); background: rgba(244, 201, 107, .08); border-radius: 12px;
+    padding: 12px 14px; font-size: 13.5px; color: var(--uyari); }
+  .uyari-kutu.basari { border-color: rgba(113, 214, 160, .38); background: rgba(113, 214, 160, .08); color: var(--ok); }
+  .uyari-kutu.bilgi { border-color: rgba(255, 138, 101, .38); background: rgba(255, 138, 101, .08); color: var(--vurgu-acik); }
   .alt-baslik { font: 600 12px var(--govde); text-transform: uppercase; letter-spacing: .08em; color: var(--sonuk); margin: 20px 0 10px; }
   .onay img { width: 100%; border-radius: 12px; border: 1px solid var(--parilti); margin-bottom: 12px; display: block; }
   .paneller { list-style: none; padding: 0; margin: 0 0 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; counter-reset: p; }
   .paneller li { counter-increment: p; background: var(--yukseltilmis); border: 1px solid var(--sinir); border-radius: 10px;
     padding: 10px 12px 10px 42px; font-size: 13px; color: var(--soluk); position: relative; }
   .paneller li::before { content: counter(p); position: absolute; left: 10px; top: 10px; width: 22px; height: 22px; border-radius: 6px;
-    display: grid; place-items: center; font: 500 11px var(--mono); color: #c4b5fd; background: rgba(139, 92, 246, .15); }
+    display: grid; place-items: center; font: 500 11px var(--mono); color: var(--vurgu-acik); background: rgba(255, 138, 101, .15); }
 
   .terminal { background: var(--gomme); border: 1px solid var(--parilti); border-radius: 12px; overflow: hidden; }
   .terminal-bas { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--sinir);
@@ -148,7 +157,7 @@
   .log.kisa { height: 220px; }
   .log div { padding: 1px 0; }
   .log .zaman { color: var(--sonuk); margin-right: 8px; }
-  .log .s { color: var(--sonuk); } .log .arac { color: #c4b5fd; } .log .hata { color: var(--hata); }
+  .log .s { color: var(--sonuk); } .log .arac { color: var(--vurgu-acik); } .log .hata { color: var(--hata); }
   .log .durum { color: var(--ok); font-weight: 500; }
   .log:empty::before { content: "canavar-engine:~$ bekleniyor…"; color: var(--ok); }
   .log::-webkit-scrollbar, dialog::-webkit-scrollbar { width: 8px; }
@@ -159,7 +168,7 @@
   .izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
   .is-kart, .kar-kart { background: var(--panel); border: 1px solid var(--sinir); border-radius: 14px; overflow: hidden;
     cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; display: flex; flex-direction: column; text-align: left; padding: 0; color: inherit; font: inherit; }
-  .is-kart:hover, .kar-kart:hover { border-color: rgba(139, 92, 246, .5); transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(139, 92, 246, .35); color: inherit; }
+  .is-kart:hover, .kar-kart:hover { border-color: rgba(255, 138, 101, .5); transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(255, 138, 101, .22); color: inherit; }
   /* <button> içeriği kendi genişliğine büzülür; kapak ve görsel boş div olduğu için 0'a çöker. */
   .is-kart > *, .kar-kart > * { width: 100%; }
   .is-kart .kapak { aspect-ratio: 16/9; background: var(--gomme) center/cover no-repeat; position: relative; }
@@ -175,14 +184,14 @@
   .palet i { width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
   .yeni-kart { border: 1.5px dashed var(--parilti); border-radius: 14px; display: grid; place-items: center; gap: 8px; min-height: 260px;
     color: var(--soluk); background: transparent; cursor: pointer; font: 500 14px var(--govde); }
-  .yeni-kart:hover { border-color: var(--mor); color: #fff; }
+  .yeni-kart:hover { border-color: var(--vurgu); color: var(--yazi); }
   .yeni-kart b { display: block; font-size: 30px; line-height: 1; background: var(--gradyan); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .bos-durum { text-align: center; color: var(--soluk); padding: 40px 16px; }
 
   /* diyaloglar */
   dialog { background: var(--panel); color: var(--yazi); border: 1px solid var(--parilti); border-radius: 18px; padding: 0;
     width: min(980px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow: auto;
-    box-shadow: 0 20px 48px -8px rgba(0,0,0,.8), 0 0 24px rgba(139, 92, 246, .12); }
+    box-shadow: 0 20px 48px -8px rgba(0,0,0,.8), 0 0 24px rgba(255, 138, 101, .1); }
   dialog::backdrop { background: rgba(5, 6, 10, .72); backdrop-filter: blur(4px); }
   .diyalog-bas { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 12px;
     padding: 16px 20px; background: rgba(19, 21, 31, .95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--sinir); }
@@ -201,7 +210,7 @@
   .aday { display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 18px; align-items: start; }
   .aday img { width: 100%; border-radius: 12px; border: 1px solid var(--parilti); display: block; }
   .yukle { border: 1.5px dashed var(--parilti); border-radius: 12px; padding: 16px; display: flex; gap: 14px; align-items: center; cursor: pointer; }
-  .yukle:hover { border-color: var(--mor); }
+  .yukle:hover { border-color: var(--vurgu); }
   .yukle img, .yukle .yer-tutucu { width: 72px; height: 90px; flex: none; object-fit: cover; border-radius: 8px; background: var(--gomme); }
   .yukle .yer-tutucu { display: grid; place-items: center; font-size: 26px; color: var(--sonuk); border: 1px solid var(--parilti); }
   .yukle input { display: none; }
@@ -209,78 +218,142 @@
   [hidden] { display: none !important; }
   footer { color: var(--sonuk); font-size: 12px; text-align: center; margin-top: 28px; line-height: 1.6; }
 
+  /* Stitch çalışma alanı: iş akışı solda, hazırlık ve bağlantılar sağda. */
+  #gorunum-yeni { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(320px, .85fr);
+    align-items: start; gap: 16px; }
+  .ana-kolon, .yan-kolon { display: grid; align-content: start; gap: 16px; min-width: 0; }
+  #gorunum-yeni section { margin: 0; min-width: 0; }
+  .panel-form .kart-bas { margin-bottom: 22px; }
+  .panel-form { background: radial-gradient(circle at 95% 0%, rgba(255, 138, 101, .1), transparent 38%), var(--panel); }
+  .panel-form h2 { font-size: 21px; margin-top: 5px; }
+  .panel-form .alt { max-width: 68ch; }
+  .ust-etiket { display: inline-block; padding: 4px 8px; border: 1px solid rgba(255, 138, 101, .42);
+    border-radius: 6px; background: rgba(255, 138, 101, .12); color: var(--vurgu-acik); font: 700 10px var(--govde); letter-spacing: .09em; }
+  .akis-ipucu { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; padding-top: 17px;
+    border-top: 1px solid var(--sinir); color: var(--soluk); font-size: 12px; }
+  .akis-ipucu span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .akis-ipucu b { color: var(--altin); font: 600 11px var(--mono); }
+  .akis-ipucu i { color: var(--sonuk); font-style: normal; }
+  .panel-kurulum .satir { display: grid; gap: 8px; }
+  .panel-kurulum .rozet { width: 100%; border-radius: 7px; padding: 11px 12px; background: var(--yukseltilmis); }
+  .panel-kurulum .rozet::before { flex: none; }
+  .panel-platformlar .kart-bas { margin-bottom: 12px; }
+  .panel-platformlar .alt { font-size: 12px; }
+  .panel-platformlar .kayit .dugme { align-self: start; font-size: 12px; padding: 7px 10px; }
+  .panel-platformlar details summary { min-height: 32px; }
+  .panel-is #is-baslik { overflow-wrap: anywhere; }
+
+  @media (max-width: 1050px) {
+    .ust-cubuk { flex-wrap: wrap; }
+    nav.sekmeler { width: 100%; }
+    #gorunum-yeni { grid-template-columns: minmax(0, 1.4fr) minmax(280px, .9fr); }
+    form.is-formu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #baslat { grid-column: 1 / -1; }
+  }
+
   @media (max-width: 720px) {
-    main { padding-top: 24px; }
-    h1 { font-size: 24px; }
-    .maskot { width: 46px; height: 46px; } .maskot svg { width: 30px; height: 30px; }
+    main { padding: 12px 12px 48px; }
+    .ust-cubuk { padding: 10px 12px; gap: 8px; }
+    h1 { font-size: 17px; }
+    header .alt { display: none; }
+    nav.sekmeler a { flex: 1; justify-content: center; padding: 10px 7px; font-size: 12px; }
+    #gorunum-yeni { grid-template-columns: 1fr; gap: 14px; }
+    .ana-kolon, .yan-kolon { gap: 14px; }
+    #gorunum-yeni section { width: 100%; }
     section { padding: 18px 16px; }
+    .panel-form h2 { font-size: 19px; }
+    .akis-ipucu i { display: none; }
     form.is-formu { grid-template-columns: 1fr 1fr; }
     form.is-formu .girdi, #baslat { grid-column: 1 / -1; }
     select { width: 100%; }
     .alanlar, .aday { grid-template-columns: 1fr; }
   }
+  @media (max-width: 430px) {
+    nav.sekmeler a { font-size: 11px; }
+    form.is-formu { grid-template-columns: 1fr; }
+    form.is-formu .girdi, #baslat { grid-column: 1; }
+    .secim { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
 </style>
 </head>
 <body>
 <main>
+  <div class="ust-cubuk">
   <header>
     <div class="maskot" aria-hidden="true">
-      <!-- küçük canavar: iki boynuz, tek göz, dişler -->
-      <svg viewBox="0 0 36 36" fill="none">
-        <path d="M9 12 6 4l8 5M27 12l3-8-8 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="6" y="9" width="24" height="23" rx="10" fill="#fff" fill-opacity=".95"/>
-        <circle cx="18" cy="18" r="5" fill="#1a1033"/><circle cx="19.6" cy="16.4" r="1.6" fill="#fff"/>
-        <path d="M12 26h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/>
-        <path d="M14.5 26v2.2M18 26v2.2M21.5 26v2.2" stroke="#1a1033" stroke-width="1.6" stroke-linecap="round"/>
+      <!-- Stitch tarafından üretilen tek gözlü canavar işareti, stüdyo paletine uyarlandı. -->
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M12 20C12 13.3726 17.3726 8 24 8C30.6274 8 36 13.3726 36 20V32C36 36.4183 32.4183 40 28 40H20C15.5817 40 12 36.4183 12 32V20Z" fill="#263d45"/>
+        <path d="M16 11L14 6L19 9M32 11L34 6L29 9" stroke="#f4c96b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="24" r="8" fill="#09141b" stroke="#ff8a65" stroke-width="2"/>
+        <circle cx="24" cy="24" r="4.5" fill="#f4c96b"/>
+        <circle cx="26" cy="22.5" r="1.5" fill="#fff8ed"/>
+        <path d="M20 33H28" stroke="#ff8a65" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </div>
     <div>
       <h1>Animasyon <span>Canavarı</span></h1>
-      <p class="alt">Beğendiğin animasyonun yapısını al, kendi karakterlerinle yeniden üret.</p>
+      <p class="alt">Linkten hikâyeye, hikâyeden animasyona.</p>
     </div>
   </header>
 
-  <nav class="sekmeler">
+  <nav class="sekmeler" aria-label="Ana gezinme">
     <a href="#yeni" data-sekme="yeni">✦ Yeni iş</a>
     <a href="#isler" data-sekme="isler">İşlerim <span class="sayac" id="is-sayac" hidden></span></a>
     <a href="#karakterler" data-sekme="karakterler">Karakterlerim <span class="sayac" id="kar-sayac" hidden></span></a>
   </nav>
+  </div>
 
   <!-- ============================================================ YENİ İŞ -->
   <div id="gorunum-yeni">
-    <section>
-      <div class="kart-bas"><h2><span class="adim">1</span>Kurulum durumu</h2></div>
-      <div class="satir" id="kurulum"><span class="rozet">Kontrol ediliyor…</span></div>
-    </section>
-
-    <section>
-      <div class="kart-bas">
-        <h2><span class="adim">2</span>Üretim platformunu bağla</h2>
-        <button id="yenile" class="hayalet">↻ Bağlantıları yenile</button>
-      </div>
-      <p class="alt" style="margin:-6px 0 16px">Videolar senin platform hesabında, senin kredinle üretilir. En az birini bağla.</p>
-      <div class="platformlar" id="platformlar"></div>
-    </section>
-
-    <section>
-      <div class="kart-bas"><h2><span class="adim">3</span>Yeni iş</h2></div>
+    <div class="ana-kolon">
+    <section class="panel-form">
+      <div class="kart-bas"><div><span class="ust-etiket">YENİ İŞ</span><h2>Yeni animasyon işi başlat</h2>
+        <p class="alt">Instagram bağlantısını ekle, kadronu ve üretim platformunu seç.</p></div></div>
       <form class="is-formu" id="form">
-        <label class="girdi">
+        <label class="girdi" for="url"><span class="alan-baslik">Instagram Reel bağlantısı</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
           <input type="url" id="url" required placeholder="https://www.instagram.com/reel/…" aria-label="Instagram linki">
         </label>
-        <select id="kadro" aria-label="Kadro" title="Hangi karakterlerle üretilsin"></select>
-        <select class="platform-sec" id="platform" aria-label="Üretim platformu"></select>
-        <button class="ana" type="submit" id="baslat">Başlat ✦</button>
+        <label class="alan"><span>Kadro</span><select id="kadro" aria-label="Kadro" title="Hangi karakterlerle üretilsin"></select></label>
+        <label class="alan"><span>Üretim platformu</span><select class="platform-sec" id="platform" aria-label="Üretim platformu"></select></label>
+        <label class="alan"><span>Video oranı</span><select id="oran" aria-label="Video oranı" title="Storyboard ızgarası da buna göre çizilir; sonradan değişmez">
+          <option value="9:16">9:16 dikey (Reels, TikTok, Shorts)</option><option value="16:9">16:9 yatay (YouTube)</option></select></label>
+        <button class="ana" type="submit" id="baslat">İşi başlat</button>
       </form>
       <div class="secim" id="kar-secim"></div>
       <p class="form-hata" id="form-hata" hidden></p>
+      <div class="akis-ipucu" aria-label="Üretim aşamaları">
+        <span><b>01</b> Kaynağı analiz et</span><i aria-hidden="true">→</i>
+        <span><b>02</b> Fikrini ekle</span><i aria-hidden="true">→</i>
+        <span><b>03</b> Storyboard'u onayla</span><i aria-hidden="true">→</i>
+        <span><b>04</b> Videoyu üret</span>
+      </div>
     </section>
 
-    <section id="is" hidden>
+    <section class="panel-is" id="is" hidden>
       <div class="kart-bas">
-        <h2><span class="adim">4</span><span id="is-baslik">İş</span></h2>
-        <span class="rozet" id="is-durum"></span>
+        <h2><span id="is-baslik">Aktif iş</span></h2>
+        <span class="satir" style="gap:8px"><span class="rozet" id="is-durum"></span>
+          <button type="button" class="durdur" id="is-durdur" hidden>■ Durdur</button>
+          <button type="button" id="is-devam" hidden>↻ Devam et</button></span>
+      </div>
+
+      <div class="onay" id="analiz" hidden>
+        <div class="uyari-kutu">Analiz hazır — henüz kredi harcanmadı. Hikâyede bir şeyi değiştirmek
+          istiyorsan şimdi yaz; storyboard senin fikrinle çizilir.</div>
+        <p class="alt" id="analiz-ozet"></p>
+        <div class="alt-baslik">Karakter eşleşmesi</div>
+        <ul class="paneller" id="analiz-eslesme"></ul>
+        <div class="alt-baslik">Beat planı</div>
+        <ol class="paneller" id="analiz-beatler"></ol>
+        <p class="alt" id="analiz-not"></p>
+        <label class="alt-baslik" for="fikir">Kendi fikrin (isteğe bağlı)</label>
+        <textarea id="fikir" maxlength="1500" placeholder="Örn. kadın çöp yerine yemeği döksün, sonunda kedi yemeği kapsın"></textarea>
+        <div class="satir" style="margin-top:12px"><button class="ana" id="storyboard-uret">Storyboard'u çiz ✦</button></div>
       </div>
 
       <div class="onay" id="onay" hidden>
@@ -290,7 +363,18 @@
         <div id="gorseller"></div>
         <ol class="paneller" id="paneller"></ol>
         <p class="alt" id="onay-not"></p>
-        <textarea id="kullanici-not" placeholder="İsteğe bağlı: video aşaması için not"></textarea>
+        <label class="alt-baslik" for="sb-revize-not">Değişiklik iste</label>
+        <textarea id="sb-revize-not" maxlength="1500" placeholder="Örn. Panel 4'te kadın yemeği yere değil masaya döksün"></textarea>
+        <div class="satir" style="margin-top:10px"><button id="sb-revize">Storyboard'u yeniden çiz</button></div>
+        <div class="alt-baslik">Video ayarı</div>
+        <div class="satir" style="gap:10px;flex-wrap:wrap;align-items:center">
+          <label class="alan" style="margin:0"><span>Çözünürlük</span><select id="cozunurluk" aria-label="Çözünürlük"></select></label>
+          <span class="alt" id="video-oran-bilgi"></span>
+        </div>
+        <p class="alt">720p, 480p'nin yaklaşık 2,3 katı kredi harcar (ör. 11 sn: 385 → 880 kredi, OpenArt).
+          Claude göndermeden önce gerçek maliyeti bakiyenle karşılaştırır; yetmiyorsa üretmez.</p>
+        <label class="alt-baslik" for="kullanici-not">Video aşaması için not</label>
+        <textarea id="kullanici-not" placeholder="İsteğe bağlı"></textarea>
         <div class="satir" style="margin-top:12px"><button class="ana" id="onayla">Onayla ve videoyu üret ✦</button></div>
       </div>
 
@@ -302,6 +386,25 @@
         <div class="log" id="log"></div>
       </div>
     </section>
+    </div>
+
+    <aside class="yan-kolon" aria-label="Sistem ve platform bağlantıları">
+
+    <section class="panel-kurulum">
+      <div class="kart-bas"><h2>Sistem durumu</h2></div>
+      <div class="satir" id="kurulum"><span class="rozet">Kontrol ediliyor…</span></div>
+    </section>
+
+    <section class="panel-platformlar">
+      <div class="kart-bas">
+        <h2>Üretim platformları</h2>
+        <button id="yenile" class="hayalet kucuk">↻ Yenile</button>
+      </div>
+      <p class="alt" style="margin:-6px 0 16px">Üretim, bağladığın platformdaki kredilerini kullanır.</p>
+      <div class="platformlar" id="platformlar"></div>
+    </section>
+
+    </aside>
   </div>
 
   <!-- ============================================================ İŞLERİM -->
@@ -338,7 +441,6 @@
     </section>
   </div>
 
-  <footer>"Kayıt ol" bağlantıları reklam / iş birliği linkidir; üzerinden kayıt olursan geliştiriciye komisyon gidebilir, sana ek maliyeti yoktur.</footer>
 </main>
 
 <!-- ============================================================ İŞ DETAYI -->
@@ -372,7 +474,9 @@
 
       <div id="kd-ciz-is" hidden>
         <div class="satir" style="justify-content:space-between;margin-bottom:12px">
-          <h3 id="kd-is-baslik"></h3><span class="rozet" id="kd-is-durum"></span>
+          <h3 id="kd-is-baslik"></h3><span class="satir" style="gap:8px"><span class="rozet" id="kd-is-durum"></span>
+          <button type="button" class="durdur" id="kd-is-durdur" hidden>■ Durdur</button>
+          <button type="button" id="kd-is-devam" hidden>↻ Devam et</button></span>
         </div>
         <div id="kd-aday" hidden>
           <div class="aday">
@@ -425,7 +529,7 @@ function rozet(metin, tur) { return el("span", { className: "rozet " + (tur || "
 function hataGoster(kutu, metin) { kutu.textContent = metin || ""; kutu.hidden = !metin; }
 
 const DURUM_ETIKET = { calisiyor: ["Çalışıyor", "uyari canli"], onay_bekliyor: ["Onay bekliyor", "uyari"],
-  tamam: ["Tamamlandı", "ok"], hata: ["Hata", "hata"] };
+  tamam: ["Tamamlandı", "ok"], hata: ["Hata", "hata"], durduruldu: ["Durduruldu", "hata"] };
 let DURUM = null, KADROLAR = [];
 
 /* ---------------------------------------------------------------- sekmeler */
@@ -459,6 +563,11 @@ function durumRozeti(kutu, durum) { const [m, t] = DURUM_ETIKET[durum]; kutu.cla
 async function durumYukle(yenile) {
   DURUM = await api("/api/durum" + (yenile ? "?yenile=1" : ""));
   const d = DURUM;
+  const cs = $("#cozunurluk");
+  if (d.video_ayar && !cs.options.length) {
+    cs.replaceChildren(...d.video_ayar.cozunurlukler.map((c) => new Option(c, c)));
+    cs.value = d.video_ayar.cozunurluk;
+  }
   $("#kurulum").replaceChildren(
     rozet(d.claude ? "Claude Code kurulu" : "Claude Code yok", d.claude ? "ok" : "hata"),
     rozet(d.pipeline_gecerli ? "Pipeline hazır" : "Pipeline bulunamadı", d.pipeline_gecerli ? "ok" : "hata"),
@@ -471,12 +580,12 @@ async function durumYukle(yenile) {
     const kart = el("div", { className: "platform" + (p.durum === "bagli" ? " bagli" : "") });
     const etiket = { bagli: ["Bağlı", "ok"], giris: ["Giriş gerekli", "uyari"], yok: ["Bağlı değil", ""] }[p.durum];
     kart.innerHTML = `<div class="platform-bas"><h3></h3></div>
-      <details ${p.durum === "bagli" ? "" : "open"}><summary>Nasıl bağlanır?</summary><ol>
+      <details><summary>Nasıl bağlanır?</summary><ol>
         <li><a target="_blank" rel="noopener" href="https://claude.ai/settings/connectors">claude.ai → Ayarlar → Connectors</a> → <b>Add custom connector</b></li>
         <li>Bu adresi yapıştır:<div class="kopya"><code></code><button type="button">Kopyala</button></div></li>
         <li>Hesabınla giriş yap, sonra burada <b>Bağlantıları yenile</b>.</li></ol></details>
       <div class="kayit"><a class="dugme" target="_blank" rel="noopener sponsored">Hesabın yok mu? Kayıt ol ↗</a>
-        <span class="reklam">Reklam / iş birliği linki</span></div>`;
+        <span class="reklam">reklam</span></div>`;
     $("h3", kart).textContent = p.ad;
     $(".platform-bas", kart).append(rozet(...etiket));
     $("code", kart).textContent = p.mcp;
@@ -554,14 +663,37 @@ function isAc(is) {
 }
 function isGoster(is) {
   aktif = is; durumRozeti($("#is-durum"), is.durum);
+  $("#is-durdur").hidden = is.durum !== "calisiyor";
+  $("#is-devam").hidden = !is.devam_edilebilir;
   // Gösterilen iş düştüyse ama arkada başka bir video işi sürüyorsa ona geç
   // (ör. çift tıklamayla açılan kopya durdurulduğunda ekran "Hata"da kalıyordu).
-  if (is.durum === "hata") api("/api/oturumlar").then((liste) => {
+  if (is.durum === "hata" && !is.devam_edilebilir) api("/api/oturumlar").then((liste) => {
     const suren = liste.findLast((i) => i.tur === "video" && i.id !== is.id && (i.durum === "calisiyor" || i.durum === "onay_bekliyor"));
     if (suren && aktif?.id === is.id) isAc(suren);
   });
-  $("#onay").hidden = is.durum !== "onay_bekliyor";
-  if (is.durum === "onay_bekliyor" && is.sonuc) {
+  const analizde = (is.asama || "storyboard") === "analiz";
+  // Video aşaması hata verdiyse (ör. bakiye) onay ekranı yeniden deneme için açılır.
+  const videoYeniden = is.tur === "video" && is.durum === "hata" && is.asama === "video";
+  $("#analiz").hidden = !(is.durum === "onay_bekliyor" && analizde);
+  $("#onay").hidden = !((is.durum === "onay_bekliyor" && !analizde) || videoYeniden);
+  $("#sb-revize").closest(".satir").hidden = videoYeniden;
+  $("#sb-revize-not").hidden = videoYeniden;
+  $("label[for=sb-revize-not]").hidden = videoYeniden;
+  $("#onayla").textContent = videoYeniden ? "Videoyu yeniden üret ✦" : "Onayla ve videoyu üret ✦";
+  $("#video-oran-bilgi").textContent = `Oran: ${is.oran || "9:16"} (iş başında seçildi)`;
+  const cs = $("#cozunurluk");
+  if (DURUM?.video_ayar && cs.options.length !== DURUM.video_ayar.cozunurlukler.length) {
+    cs.replaceChildren(...DURUM.video_ayar.cozunurlukler.map((c) => new Option(c, c)));
+    cs.value = DURUM.video_ayar.cozunurluk;
+  }
+  if (is.durum === "onay_bekliyor" && analizde && is.sonuc) {
+    const s = is.sonuc;
+    $("#analiz-ozet").textContent = [s.kaynak_turu === "gercek" ? "Gerçek çekim kaynak." : "", s.sure_sn ? `${s.sure_sn} sn · ${s.model || ""}${s.sayfa ? ` · ${s.sayfa} storyboard sayfası` : ""}${s.bolum > 1 ? ` · ${s.bolum} bölüm halinde üretilip birleştirilecek` : ""}.` : "", s.ozet || ""].filter(Boolean).join(" ");
+    $("#analiz-eslesme").replaceChildren(...(s.eslesme || []).map((t) => el("li", { textContent: t })));
+    $("#analiz-beatler").replaceChildren(...(s.beatler || []).map((t) => el("li", { textContent: t.replace(/^Beat \d+\s*/, "") })));
+    $("#analiz-not").textContent = s.not || "";
+  }
+  if (((is.durum === "onay_bekliyor" && !analizde) || videoYeniden) && is.sonuc) {
     $("#gorseller").replaceChildren(...(is.sonuc.denetim_dosyalari || []).map((y) => el("img", { src: dosyaUrl(y), alt: y })));
     $("#paneller").replaceChildren(...(is.sonuc.paneller || []).map((s) => el("li", { textContent: s.replace(/^Panel \d+:\s*/, "") })));
     $("#onay-not").textContent = is.sonuc.not || "";
@@ -574,13 +706,39 @@ $("#form").onsubmit = async (e) => {
   e.preventDefault(); hataGoster($("#form-hata"));
   if ($("#baslat").disabled) return;
   $("#baslat").disabled = true;  // çift tıklama iki iş açıyordu
-  try { aktif = null; isAc(await api("/api/is", { url: $("#url").value.trim(), kadro: $("#kadro").value, platform: $("#platform").value,
+  try { aktif = null; isAc(await api("/api/is", { url: $("#url").value.trim(), kadro: $("#kadro").value, platform: $("#platform").value, oran: $("#oran").value,
     karakterler: [...document.querySelectorAll("#kar-secim input:checked")].map((i) => i.value) })); }
   catch (h) { hataGoster($("#form-hata"), h.message); formKilit(); }
 };
 $("#onayla").onclick = async () => {
   $("#onayla").disabled = true;
-  try { isGoster(await api(`/api/is/${aktif.id}/onayla`, { not: $("#kullanici-not").value })); } finally { $("#onayla").disabled = false; }
+  try { isGoster(await api(`/api/is/${aktif.id}/onayla`, { not: $("#kullanici-not").value, cozunurluk: $("#cozunurluk").value })); }
+  catch (h) { alert(h.message); } finally { $("#onayla").disabled = false; }
+};
+// Durdurma Claude'u keser; platforma çoktan gönderilmiş üretim görevi kuyrukta sürer.
+async function isDurdur(is, dugme, goster) {
+  if (!is || !confirm("İş durdurulsun mu? Claude Code hemen kesilir. Platforma çoktan gönderilmiş bir görsel/video üretimi varsa o platformda sürer ve kredisi düşer.")) return;
+  dugme.disabled = true;
+  try { goster(await api(`/api/is/${is.id}/durdur`, {})); } catch (h) { alert(h.message); } finally { dugme.disabled = false; }
+}
+$("#is-durdur").onclick = () => isDurdur(aktif, $("#is-durdur"), isGoster);
+async function isDevam(is, dugme, goster) {
+  dugme.disabled = true;
+  try { goster(await api(`/api/is/${is.id}/devam`, {})); } catch (h) { alert(h.message); } finally { dugme.disabled = false; }
+}
+$("#is-devam").onclick = () => isDevam(aktif, $("#is-devam"), isGoster);
+$("#kd-is-devam").onclick = () => isDevam(kdIs, $("#kd-is-devam"), kdIsGoster);
+$("#kd-is-durdur").onclick = () => isDurdur(kdIs, $("#kd-is-durdur"), kdIsGoster);
+$("#storyboard-uret").onclick = async () => {
+  $("#storyboard-uret").disabled = true;
+  try { isGoster(await api(`/api/is/${aktif.id}/storyboard`, { fikir: $("#fikir").value.trim() })); $("#fikir").value = ""; }
+  finally { $("#storyboard-uret").disabled = false; }
+};
+$("#sb-revize").onclick = async () => {
+  if (!$("#sb-revize-not").value.trim()) return $("#sb-revize-not").focus();
+  $("#sb-revize").disabled = true;
+  try { isGoster(await api(`/api/is/${aktif.id}/sb-revize`, { not: $("#sb-revize-not").value.trim() })); $("#sb-revize-not").value = ""; }
+  finally { $("#sb-revize").disabled = false; }
 };
 $("#yenile").onclick = () => durumYukle(true);
 
@@ -617,10 +775,10 @@ async function isDetayAc(i) {
     const b = el("button", { className: "ana", textContent: "Onay ekranına git ✦" });
     b.onclick = () => { $("#is-diyalog").close(); location.hash = "#yeni"; aktif = null; isAc(i.arayuz_is); };
     g.append(el("div", { className: "uyari-kutu", style: "display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px" },
-      "Bu işin storyboard'u onayını bekliyor.", b));
+      (i.arayuz_is.asama === "analiz" ? "Bu işin analizi hazır, fikrini bekliyor." : "Bu işin storyboard'u onayını bekliyor."), b));
   }
   const ust = el("div", { className: "meta", style: "margin-bottom:16px;font-size:13px" });
-  if (d.meta.url) ust.append(el("a", { href: d.meta.url, target: "_blank", rel: "noopener", textContent: "Kaynak ↗", style: "color:#c4b5fd" }));
+  if (d.meta.url) ust.append(el("a", { href: d.meta.url, target: "_blank", rel: "noopener", textContent: "Kaynak ↗", style: "color:var(--vurgu-acik)" }));
   if (d.meta.sahip) ust.append(el("span", { textContent: "@" + d.meta.sahip }));
   if (d.meta.sure_sn) ust.append(el("span", { textContent: `${d.meta.sure_sn.toFixed(1)} sn` }));
   if (d.meta.izlenme) ust.append(el("span", { textContent: `${d.meta.izlenme.toLocaleString("tr-TR")} izlenme` }));
@@ -779,6 +937,8 @@ function kdIsAc(is) {
 }
 function kdIsGoster(is) {
   kdIs = is; durumRozeti($("#kd-is-durum"), is.durum);
+  $("#kd-is-durdur").hidden = is.durum !== "calisiyor";
+  $("#kd-is-devam").hidden = !is.devam_edilebilir;
   const bekliyor = is.durum === "onay_bekliyor" && is.sonuc;
   $("#kd-aday").hidden = !bekliyor;
   if (bekliyor) {
