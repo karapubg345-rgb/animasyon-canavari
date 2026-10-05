@@ -60,8 +60,11 @@ echo [4/5] Python paketleri kuruluyor...
 if not exist ".venv\Scripts\python.exe" (
   py -3 -m venv .venv || goto hata
 )
-".venv\Scripts\python.exe" -m pip install --upgrade pip -q
+rem pip kendini guncellemiyor: Windows'ta antivirus dosyayi kilitlerse guncelleme
+rem yarida kalir, bozuk "~ip" klasoru birakir ve paket kurulumu da cuker.
+for /d %%D in (".venv\Lib\site-packages\~*") do rmdir /s /q "%%D"
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt -q || goto hata
+".venv\Scripts\python.exe" -c "import yaml, apify_client, PIL, httpx" || goto hata
 echo   Tamam.
 
 rem ---------------------------------------------------------------- .env

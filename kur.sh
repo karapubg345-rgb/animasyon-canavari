@@ -38,8 +38,8 @@ echo "  Tamam."
 
 echo "[4/5] Python paketleri kuruluyor..."
 [ -x .venv/bin/python ] || python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip -q
 .venv/bin/python -m pip install -r requirements.txt -q
+.venv/bin/python -c 'import yaml, apify_client, PIL, httpx'
 echo "  Tamam."
 
 echo "[5/5] Ayar dosyası..."
