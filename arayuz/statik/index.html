@@ -214,6 +214,12 @@
   .yukle img, .yukle .yer-tutucu { width: 72px; height: 90px; flex: none; object-fit: cover; border-radius: 8px; background: var(--gomme); }
   .yukle .yer-tutucu { display: grid; place-items: center; font-size: 26px; color: var(--sonuk); border: 1px solid var(--parilti); }
   .yukle input { display: none; }
+  /* çizim sürerken: kullanıcı "çizilmiyor" sanmasın */
+  .cizim-suruyor { display: flex; gap: 16px; align-items: center; padding: 18px; margin-bottom: 14px; border: 1px solid var(--parilti); border-radius: 12px; background: var(--gomme); }
+  .cizim-suruyor .iskelet { width: 72px; height: 90px; flex: none; border-radius: 8px; background: linear-gradient(110deg, var(--sinir) 30%, var(--parilti) 50%, var(--sinir) 70%); background-size: 250% 100%; animation: parilti 1.6s linear infinite; }
+  @keyframes parilti { to { background-position: -150% 0; } }
+  .cizim-suruyor b { font-weight: 500; display: block; margin-bottom: 4px; }
+  .cizim-suruyor .alt { margin: 0; }
 
   [hidden] { display: none !important; }
   footer { color: var(--sonuk); font-size: 12px; text-align: center; margin-top: 28px; line-height: 1.6; }
@@ -478,6 +484,11 @@
           <button type="button" class="durdur" id="kd-is-durdur" hidden>■ Durdur</button>
           <button type="button" id="kd-is-devam" hidden>↻ Devam et</button></span>
         </div>
+        <div class="cizim-suruyor" id="kd-suruyor" hidden>
+          <div class="iskelet"></div>
+          <div><b id="kd-suruyor-baslik">Model sheet çiziliyor…</b>
+            <p class="alt" id="kd-suruyor-not"></p></div>
+        </div>
         <div id="kd-aday" hidden>
           <div class="aday">
             <div><img id="kd-aday-img" alt="Aday model sheet"><p class="alt" id="kd-aday-not"></p></div>
@@ -485,9 +496,11 @@
               <div class="uyari-kutu bilgi" style="margin-bottom:14px">Model sheet hazır. Alanları kontrol et, gerekirse düzelt; kimlik kilidi her üretimde prompt'a birebir gider.</div>
               <div id="kd-aday-alanlar"></div>
               <div class="satir" style="margin-top:14px"><button class="ana" id="kd-aday-kaydet">Kadroya kaydet</button></div>
-              <div class="alt-baslik">Beğenmedin mi?</div>
-              <textarea id="kd-revize-not" placeholder="Örn. saçı daha kısa olsun, yağmurluk turuncu olsun"></textarea>
-              <div class="satir" style="margin-top:10px"><button id="kd-revize">Tekrar çiz</button></div>
+              <div id="kd-revize-kutu">
+                <div class="alt-baslik">Beğenmedin mi?</div>
+                <textarea id="kd-revize-not" placeholder="Örn. saçı daha kısa olsun, yağmurluk turuncu olsun"></textarea>
+                <div class="satir" style="margin-top:10px"><button id="kd-revize">Tekrar çiz</button></div>
+              </div>
               <p class="form-hata" id="kd-aday-hata" hidden></p>
             </div>
           </div>
@@ -508,9 +521,25 @@
         <div><b style="font-weight:500">Model sheet görseli</b><div class="alt">PNG, JPG veya WEBP · 4:5 önerilir. Yüz, saç ve oranlar buradan kilitlenir.</div></div>
         <input type="file" id="kd-yukle-dosya" accept="image/png,image/jpeg,image/webp">
       </label>
-      <div id="kd-yukle-alanlar" style="margin-top:16px"></div>
+      <label class="alan" id="kd-yukle-ad-alan" style="margin-top:16px;max-width:320px">Karakterin adı<input type="text" id="kd-yukle-ad" maxlength="40" placeholder="Örn. Defne"></label>
+      <p class="alt" id="kd-yukle-bilgi" style="margin:12px 0 0">Bu kadar. Kaydet'e basınca Claude görsele bakıp kimlik kilidini, kıyafeti ve paleti kendisi yazar; sen kontrol edip kaydedersin. <b style="font-weight:500">Platform kredisi harcamaz.</b></p>
+      <details id="kd-yukle-gelismis" style="margin-top:14px"><summary>Alanları kendim doldurayım</summary>
+        <div id="kd-yukle-alanlar" style="margin-top:12px"></div></details>
       <p class="form-hata" id="kd-yukle-hata" hidden></p>
       <div class="satir" style="margin-top:14px"><button class="ana" id="kd-yukle-kaydet">Kaydet</button></div>
+      <div id="kd-tasi" hidden>
+        <div class="satir" style="margin-top:10px"><button type="button" class="hayalet" id="kd-tasi-ac">⇄ Başka kadroya taşı</button></div>
+        <div id="kd-tasi-panel" hidden>
+          <div class="alt-baslik">Hangi kadroya taşınsın?</div>
+          <div class="satir">
+            <select id="kd-tasi-hedef" style="max-width:260px"></select>
+            <input type="text" id="kd-tasi-yeni" maxlength="30" placeholder="Yeni kadronun adı" style="max-width:220px" hidden>
+            <button type="button" class="ana" id="kd-tasi-dugme">Taşı</button>
+            <button type="button" class="hayalet" id="kd-tasi-iptal">Vazgeç</button>
+          </div>
+          <p class="form-hata" id="kd-tasi-hata" hidden></p>
+        </div>
+      </div>
     </div>
   </div>
 </dialog>
@@ -879,7 +908,7 @@ function alanFormu(kutu, c = {}) {
   };
 }
 
-let kdKadro = null, kdKarakter = null, kdYukleOku = null, kdGorsel = null, kdIs = null, kdKaynak = null, kdAdayOku = null;
+let kdKadro = null, kdKarakter = null, kdYukleOku = null, kdGorsel = null, kdIs = null, kdKaynak = null, kdAdayOku = null, kdSayac = null;
 
 function kdMod(mod) {
   document.querySelectorAll("#kd-sekmeler button").forEach((b) => b.classList.toggle("aktif", b.dataset.mod === mod));
@@ -893,7 +922,16 @@ function karakterDiyalogu(kadro, c, is) {
   $("#kd-sekmeler").hidden = !!c;
   kdYukleOku = alanFormu($("#kd-yukle-alanlar"), c || {});
   onizlemeAyarla(c?.gorsel ? dosyaUrl(c.gorsel) : "");
-  $("#kd-yukle-dosya").value = "";
+  $("#kd-yukle-dosya").value = ""; $("#kd-yukle-ad").value = "";
+  // Yeni karakterde yalnız görsel + ad; alanları Claude doldurur. Düzenlemede tüm alanlar açık.
+  $("#kd-yukle-ad-alan").hidden = $("#kd-yukle-bilgi").hidden = !!c;
+  $("#kd-yukle-gelismis").open = !!c; $("#kd-yukle-gelismis summary").hidden = !!c;
+  $("#kd-tasi").hidden = !c; $("#kd-tasi-panel").hidden = true; $("#kd-tasi-ac").hidden = false;
+  hataGoster($("#kd-tasi-hata")); $("#kd-tasi-yeni").value = "";
+  $("#kd-tasi-hedef").replaceChildren(
+    ...KADROLAR.filter((k) => k.ad !== kadro).map((k) => new Option(`${k.ad} · ${k.karakterler.length} karakter`, k.ad)),
+    new Option("+ Yeni kadro oluştur", ""));
+  tasiHedefDegisti();
   [$("#kd-yukle-hata"), $("#kd-ciz-hata"), $("#kd-aday-hata")].forEach((h) => hataGoster(h));
   if (is) { kdMod("ciz"); kdIsAc(is); }
   else {
@@ -903,7 +941,7 @@ function karakterDiyalogu(kadro, c, is) {
   }
   $("#kar-diyalog").showModal();
 }
-$("#kar-diyalog").addEventListener("close", () => { if (kdKaynak) { kdKaynak.close(); kdKaynak = null; } oturumlarYukle(); });
+$("#kar-diyalog").addEventListener("close", () => { clearInterval(kdSayac); if (kdKaynak) { kdKaynak.close(); kdKaynak = null; } oturumlarYukle(); });
 
 /* A — yükle */
 function onizlemeAyarla(src) { const i = $("#kd-yukle-onizleme"); i.src = src; i.hidden = !src; $("#kd-yukle-yer").hidden = !!src; }
@@ -914,22 +952,53 @@ $("#kd-yukle-dosya").onchange = () => {
 $("#kd-yukle-kaydet").onclick = async () => {
   hataGoster($("#kd-yukle-hata"));
   if (!kdKarakter && !kdGorsel) return hataGoster($("#kd-yukle-hata"), "Model sheet görselini seç.");
+  const alanlar = kdYukleOku();
+  if (!kdKarakter) alanlar.ad = alanlar.ad || $("#kd-yukle-ad").value.trim();
+  if (!alanlar.ad) return hataGoster($("#kd-yukle-hata"), "Karakterin adını yaz.");
   const b = $("#kd-yukle-kaydet"); b.disabled = true;
   try {
-    await api(`/api/kadro/${kdKadro}/karakter`, { ...kdYukleOku(), anahtar: kdKarakter?.anahtar, gorsel: kdGorsel });
+    // Kimlik kilidi boşsa alanları Claude görselden çıkarır, aday ekranında onaylanır.
+    if (!kdKarakter && !alanlar.kimlik_kilidi) {
+      kdIsAc(await api(`/api/kadro/${kdKadro}/karakter-oku`, { ad: alanlar.ad, gorsel: kdGorsel }));
+      return;
+    }
+    await api(`/api/kadro/${kdKadro}/karakter`, { ...alanlar, anahtar: kdKarakter?.anahtar, gorsel: kdGorsel });
     $("#kar-diyalog").close(); await kadrolarYukle();
   } catch (h) { hataGoster($("#kd-yukle-hata"), h.message); } finally { b.disabled = false; }
+};
+
+/* taşı — hedef listeden ya da yeni kadro */
+function tasiHedefDegisti() {
+  const yeni = !$("#kd-tasi-hedef").value;
+  $("#kd-tasi-yeni").hidden = !yeni;
+  if (yeni && !$("#kd-tasi-panel").hidden) $("#kd-tasi-yeni").focus();
+}
+$("#kd-tasi-hedef").onchange = tasiHedefDegisti;
+$("#kd-tasi-ac").onclick = () => { $("#kd-tasi-panel").hidden = false; $("#kd-tasi-ac").hidden = true; tasiHedefDegisti(); };
+$("#kd-tasi-iptal").onclick = () => { $("#kd-tasi-panel").hidden = true; $("#kd-tasi-ac").hidden = false; hataGoster($("#kd-tasi-hata")); };
+$("#kd-tasi-dugme").onclick = async () => {
+  hataGoster($("#kd-tasi-hata"));
+  if (!kdKarakter) return;
+  const hedef = $("#kd-tasi-hedef").value, yeniAd = $("#kd-tasi-yeni").value.trim();
+  if (!hedef && !yeniAd) { $("#kd-tasi-yeni").focus(); return hataGoster($("#kd-tasi-hata"), "Yeni kadronun adını yaz."); }
+  const b = $("#kd-tasi-dugme"); b.disabled = true;
+  try {
+    const r = await api(`/api/kadro/${kdKadro}/karakter-tasi`, hedef ? { anahtar: kdKarakter.anahtar, hedef } : { anahtar: kdKarakter.anahtar, yeni_kadro: yeniAd });
+    $("#kar-diyalog").close();
+    await kadroSecimleriniDoldur(); $("#kadro-sec").value = r.hedef; kadroGoster();  // taşınan karakter görünsün
+  } catch (h) { hataGoster($("#kd-tasi-hata"), h.message); } finally { b.disabled = false; }
 };
 
 /* B — canavar çizsin */
 $("#kd-ciz-baslat").onclick = async () => {
   hataGoster($("#kd-ciz-hata"));
-  const b = $("#kd-ciz-baslat"); b.disabled = true;
+  const b = $("#kd-ciz-baslat"); b.disabled = true; b.textContent = "Başlatılıyor…";
   try { kdIsAc(await api(`/api/kadro/${kdKadro}/karakter-uret`, { ad: $("#kd-ciz-ad").value.trim(), tarif: $("#kd-ciz-tarif").value.trim(), platform: $("#kd-ciz-platform").value })); }
-  catch (h) { hataGoster($("#kd-ciz-hata"), h.message); } finally { b.disabled = false; }
+  catch (h) { hataGoster($("#kd-ciz-hata"), h.message); } finally { b.disabled = false; b.textContent = "Çizmeye başla ✦"; }
 };
 function kdIsAc(is) {
-  kdIs = is; $("#kd-ciz-form").hidden = true; $("#kd-ciz-is").hidden = false;
+  kdIs = is; kdMod("ciz"); $("#kd-sekmeler").hidden = true;
+  $("#kd-ciz-form").hidden = true; $("#kd-ciz-is").hidden = false; $("#kd-suruyor").hidden = true;
   $("#kd-is-baslik").textContent = `${is.ad} · ${is.platform}`;
   kdIsGoster(is);
   if (kdKaynak) kdKaynak.close();
@@ -939,6 +1008,21 @@ function kdIsGoster(is) {
   kdIs = is; durumRozeti($("#kd-is-durum"), is.durum);
   $("#kd-is-durdur").hidden = is.durum !== "calisiyor";
   $("#kd-is-devam").hidden = !is.devam_edilebilir;
+  const yukleme = is.kaynak === "yukleme", suruyor = is.durum === "calisiyor";
+  const zatenSuruyor = !$("#kd-suruyor").hidden;
+  $("#kd-suruyor").hidden = !suruyor;
+  if (!suruyor) clearInterval(kdSayac);
+  if (suruyor && !zatenSuruyor) {
+    clearInterval(kdSayac);
+    const bas = Date.now();
+    $("#kd-suruyor-baslik").textContent = yukleme ? "Claude görseli okuyor…" : "Model sheet çiziliyor…";
+    const yaz = () => { const s = Math.round((Date.now() - bas) / 1000);
+      $("#kd-suruyor-not").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} · ` + (yukleme
+        ? "Genelde 1 dakikadan kısa sürer."
+        : "Genelde 2–5 dakika sürer; görsel bitince burada açılır. Pencereyi kapatabilirsin, Karakterlerim'de “çiziliyor” olarak görünür."); };
+    yaz(); kdSayac = setInterval(yaz, 1000);
+  }
+  $("#kd-revize-kutu").hidden = yukleme;
   const bekliyor = is.durum === "onay_bekliyor" && is.sonuc;
   $("#kd-aday").hidden = !bekliyor;
   if (bekliyor) {
@@ -968,7 +1052,7 @@ function karakterIsleriniGoster() {
     const b = el("button", { className: "kucuk", textContent: "Aç" });
     b.onclick = () => karakterDiyalogu(i.kadro, null, i);
     return el("div", { className: "uyari-kutu bilgi", style: "display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px" },
-      el("span", { textContent: i.durum === "onay_bekliyor" ? `${i.ad} hazır, onayını bekliyor · ${i.kadro}` : `${i.ad} çiziliyor · ${i.kadro}` }), b);
+      el("span", { textContent: i.durum === "onay_bekliyor" ? `${i.ad} hazır, onayını bekliyor · ${i.kadro}` : `${i.ad} ${i.kaynak === "yukleme" ? "okunuyor" : "çiziliyor"} · ${i.kadro}` }), b);
   }));
 }
 setInterval(() => { if (!$("#gorunum-karakterler").hidden && !$("#kar-diyalog").open) oturumlarYukle(); }, 10000);
