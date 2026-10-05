@@ -46,6 +46,11 @@ def _env_oku(yol: Path) -> dict[str, str]:
     return cikti
 
 
+def _gercek_token(tok: str | None) -> bool:
+    """Boş değer ve eski .env.example'daki yer tutucu token sayılmaz."""
+    return bool(tok) and "buraya" not in tok
+
+
 ENV = {**_env_oku(ARAYUZ.parent / ".env"), **os.environ}
 
 # Pipeline'ın kökü: CLAUDE.md, src/, config/, isler/ ve karakterlerim/ burada.
@@ -969,7 +974,7 @@ class Isleyici(BaseHTTPRequestHandler):
                 "claude": bool(claude_yolu()),
                 "pipeline": str(PIPELINE_KOK),
                 "pipeline_gecerli": (PIPELINE_KOK / "CLAUDE.md").exists(),
-                "apify": bool(ENV.get("APIFY_TOKEN") or _env_oku(PIPELINE_KOK / ".env").get("APIFY_TOKEN")),
+                "apify": _gercek_token(ENV.get("APIFY_TOKEN") or _env_oku(PIPELINE_KOK / ".env").get("APIFY_TOKEN")),
                 "platformlar": mcp_durumu(yenile="yenile" in q),
                 "video_ayar": VIDEO_AYAR,
                 "isler": [i.ozet() for i in sorted(ISLER.values(), key=lambda i: i.olusturma)],

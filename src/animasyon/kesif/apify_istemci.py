@@ -18,14 +18,17 @@ API = "https://api.apify.com/v2"
 
 def token_yukle() -> str:
     """.env dosyasindan veya ortamdan APIFY_TOKEN okur."""
-    if tok := os.environ.get("APIFY_TOKEN"):
+    # Bos deger ve eski .env.example'daki yer tutucu token sayilmaz.
+    if (tok := os.environ.get("APIFY_TOKEN")) and "buraya" not in tok:
         return tok
     env = Path(__file__).resolve().parents[3] / ".env"
     if env.exists():
         for satir in env.read_text(encoding="utf-8").splitlines():
             satir = satir.strip()
             if satir.startswith("APIFY_TOKEN="):
-                return satir.split("=", 1)[1].strip()
+                tok = satir.split("=", 1)[1].strip()
+                if tok and "buraya" not in tok:
+                    return tok
     raise RuntimeError("APIFY_TOKEN bulunamadi (.env veya ortam degiskeni)")
 
 
