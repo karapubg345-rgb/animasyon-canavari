@@ -4,6 +4,8 @@
 [![İndirme](https://img.shields.io/github/downloads/karapubg345-rgb/animasyon-canavari/total?label=indirme&color=ec4899)](https://github.com/karapubg345-rgb/animasyon-canavari/releases)
 [![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-10b981)](LICENSE)
 
+🇹🇷 Türkçe · 🇬🇧 [English](README.en.md)
+
 Instagram'da beğendiğin bir 3D animasyonun **linkini ver**; canavar videonun anlatı
 yapısını, ritmini ve kamera dilini çıkarsın, **senin karakterlerinle** yeniden üretsin.
 
